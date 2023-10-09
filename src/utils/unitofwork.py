@@ -1,11 +1,17 @@
 from abc import ABC, abstractmethod
 
 from src.database.base import async_session
-from src.repositories.category import CategoryRepository
+from src.repositories.program import (
+    CategoryRepository,
+    ProgramRepository,
+    ExerciseRepository,
+)
 
 
 class UnitOfWork(ABC):
     category: CategoryRepository
+    program: ProgramRepository
+    exercise: ExerciseRepository
 
     @abstractmethod
     def __init__(self):
@@ -36,6 +42,8 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
         self.session = self.session_factory()
 
         self.category = CategoryRepository(self.session)
+        self.program = ProgramRepository(self.session)
+        self.exercise = ExerciseRepository(self.session)
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.rollback()
