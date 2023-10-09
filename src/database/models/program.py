@@ -15,8 +15,8 @@ from src.utils.utils import Week
 class TimestampBase(DeclarativeBase):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
-        server_default=func.now(),
-        server_onupdate=func.current_timestamp(),
+        onupdate=func.current_timestamp(),
+        nullable=True,
     )
 
 
