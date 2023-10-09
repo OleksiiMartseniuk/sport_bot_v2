@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 from sqlalchemy import ForeignKey
@@ -9,7 +9,7 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
-from src.utils import Week
+from src.utils.utils import Week
 
 
 class TimestampBase(DeclarativeBase):
@@ -24,9 +24,9 @@ class Category(TimestampBase):
     __tablename__ = "category"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(30))
+    title: Mapped[str] = mapped_column(String(30), unique=True)
 
-    programs: Mapped[list["Program"]] = relationship(
+    programs: Mapped[List["Program"]] = relationship(
         back_populates="category",
         cascade="all, delete-orphan",
     )
@@ -67,7 +67,7 @@ class Exercise(TimestampBase):
     )
     program_id: Mapped[int] = mapped_column(ForeignKey("program.id"))
 
-    program: Mapped["Category"] = relationship(back_populates="exercises")
+    program: Mapped["Program"] = relationship(back_populates="exercises")
 
     def __repr__(self):
         return self.title
