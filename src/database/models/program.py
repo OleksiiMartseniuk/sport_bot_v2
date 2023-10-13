@@ -59,8 +59,9 @@ class Exercise(TimestampBase):
     title: Mapped[str] = mapped_column(String(255))
     number_of_approaches: Mapped[int] = mapped_column(Integer)
     number_of_repetitions: Mapped[int] = mapped_column(Integer)
+    rest: Mapped[Optional[int]] = mapped_column(Integer)
     image: Mapped[str] = mapped_column(String)
-    telegram_image_id: Mapped[str] = mapped_column(String(255))
+    telegram_image_id: Mapped[Optional[str]] = mapped_column(String(255))
     day: Mapped[Optional[Enum]] = mapped_column(
         Enum(Week),
         nullable=True,
