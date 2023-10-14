@@ -10,11 +10,11 @@ class AbstractRepository(ABC):
         ...
 
     @abstractmethod
-    async def get(self, id: int):
+    async def get(self, **filters):
         ...
 
     @abstractmethod
-    async def update(self, id: int):
+    async def update(self, id: int, **fields):
         ...
 
     @abstractmethod
@@ -33,8 +33,8 @@ class SqlAlchemyRepository(AbstractRepository):
         res = await self.session.execute(stmt)
         return res.scalar_one()
 
-    async def get(self, id: int) -> model:
-        stmt = select(self.model).where(self.model.id == id)
+    async def get(self, **filters) -> model:
+        stmt = select(self.model).filter_by(**filters)
         res = await self.session.execute(stmt)
         return res.scalar_one()
 
