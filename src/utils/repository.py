@@ -64,3 +64,10 @@ class SqlAlchemyRepository(AbstractRepository):
             stmt = insert(self.model).values(**filter).returning(self.model)
             res = await self.session.execute(stmt)
             return res.scalar_one()
+
+    async def exists(self, **filters) -> bool:
+        exists_criteria = (
+            select(self.model).filter_by(**filters).exists().select()
+        )
+        res = await self.session.execute(exists_criteria)
+        return res.scalar()
