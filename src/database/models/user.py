@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from datetime import datetime
 
 from sqlalchemy import ForeignKey, Integer
@@ -18,7 +18,7 @@ class User(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     telegram_id: Mapped[int] = mapped_column(Integer, unique=True)
-    program_id: Mapped[int] = mapped_column(ForeignKey("program.id"))
+    program_id: Mapped[Optional[int]] = mapped_column(ForeignKey("program.id"))
 
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(
@@ -26,7 +26,7 @@ class User(Base):
         nullable=True,
     )
 
-    program: Mapped["Program"] = relationship(back_populates="users")
+    program: Mapped[Optional["Program"]] = relationship(back_populates="users")
 
     def __repr__(self):
         return f"User [{self.id}]"
