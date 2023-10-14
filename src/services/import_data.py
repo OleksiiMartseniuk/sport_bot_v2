@@ -53,7 +53,7 @@ class ImportDataService:
                         )
                         await self.uow.exercise.update(
                             id=exercise.id,
-                            image=image_path,
+                            data={"image": image_path},
                         )
                     await self.uow.commit()
             except Exception as ex:
