@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, List
 from datetime import datetime
 
 from sqlalchemy import ForeignKey, Integer
@@ -11,6 +11,7 @@ from src.database import Base
 
 if TYPE_CHECKING:
     from .program import Program
+    from .history import HistoryExercise
 
 
 class User(Base):
@@ -27,6 +28,10 @@ class User(Base):
     )
 
     program: Mapped[Optional["Program"]] = relationship(back_populates="users")
+    history_exercises: Mapped[List["HistoryExercise"]] = relationship(
+        back_populates="program",
+        cascade="all, delete-orphan",
+    )
 
     def __repr__(self):
         return f"User [{self.id}]"

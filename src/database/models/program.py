@@ -13,6 +13,7 @@ from src.utils.utils import Week
 
 if TYPE_CHECKING:
     from .user import User
+    from .history import HistoryExercise
 
 
 class Category(Base):
@@ -58,6 +59,10 @@ class Program(Base):
         back_populates="program",
         cascade="all, delete-orphan",
     )
+    history_exercises: Mapped[List["HistoryExercise"]] = relationship(
+        back_populates="program",
+        cascade="all, delete-orphan",
+    )
 
     def __repr__(self) -> str:
         return self.title
@@ -86,6 +91,10 @@ class Exercise(Base):
     )
 
     program: Mapped["Program"] = relationship(back_populates="exercises")
+    history_exercises: Mapped[List["HistoryExercise"]] = relationship(
+        back_populates="program",
+        cascade="all, delete-orphan",
+    )
 
     def __repr__(self):
         return self.title
