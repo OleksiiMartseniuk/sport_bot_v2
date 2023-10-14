@@ -1,14 +1,13 @@
 from typing import Optional, List, TYPE_CHECKING
-from datetime import datetime
 
 from sqlalchemy import ForeignKey
 from sqlalchemy import String, Integer, Enum
-from sqlalchemy import func
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
 from src.database import Base
+from src.database.mixins import TimestampMixin
 from src.utils.utils import Week
 
 if TYPE_CHECKING:
@@ -16,17 +15,11 @@ if TYPE_CHECKING:
     from .history import HistoryExercise
 
 
-class Category(Base):
+class Category(TimestampMixin, Base):
     __tablename__ = "category"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(30), unique=True)
-
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(
-        onupdate=func.current_timestamp(),
-        nullable=True,
-    )
 
     programs: Mapped[List["Program"]] = relationship(
         back_populates="category",
@@ -37,18 +30,12 @@ class Category(Base):
         return self.title
 
 
-class Program(Base):
+class Program(TimestampMixin, Base):
     __tablename__ = "program"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(255))
     category_id: Mapped[int] = mapped_column(ForeignKey("category.id"))
-
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(
-        onupdate=func.current_timestamp(),
-        nullable=True,
-    )
 
     category: Mapped["Category"] = relationship(back_populates="programs")
     users: Mapped[List["User"]] = relationship(
@@ -68,7 +55,7 @@ class Program(Base):
         return self.title
 
 
-class Exercise(Base):
+class Exercise(TimestampMixin, Base):
     __tablename__ = "exercise"
 
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -84,15 +71,9 @@ class Exercise(Base):
     )
     program_id: Mapped[int] = mapped_column(ForeignKey("program.id"))
 
-    created_at: Mapped[datetime] = mapped_column(server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(
-        onupdate=func.current_timestamp(),
-        nullable=True,
-    )
-
     program: Mapped["Program"] = relationship(back_populates="exercises")
     history_exercises: Mapped[List["HistoryExercise"]] = relationship(
-        back_populates="program",
+        back_populates="exercise",
         cascade="all, delete-orphan",
     )
 

@@ -7,6 +7,7 @@ from src.repositories.program import (
     ExerciseRepository,
 )
 from src.repositories.user import UserRepository
+from src.repositories.history import HistoryExerciseRepository
 
 
 class UnitOfWork(ABC):
@@ -46,6 +47,7 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
         self.program = ProgramRepository(self.session)
         self.exercise = ExerciseRepository(self.session)
         self.user = UserRepository(self.session)
+        self.history_exercise = HistoryExerciseRepository(self.session)
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.rollback()
