@@ -22,7 +22,7 @@ class User(TimestampMixin, Base):
 
     program: Mapped[Optional["Program"]] = relationship(back_populates="users")
     history_exercises: Mapped[List["HistoryExercise"]] = relationship(
-        back_populates="program",
+        back_populates="user",
         cascade="all, delete-orphan",
     )
 

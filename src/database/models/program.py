@@ -73,7 +73,7 @@ class Exercise(TimestampMixin, Base):
 
     program: Mapped["Program"] = relationship(back_populates="exercises")
     history_exercises: Mapped[List["HistoryExercise"]] = relationship(
-        back_populates="program",
+        back_populates="exercise",
         cascade="all, delete-orphan",
     )
 
