@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 from datetime import datetime
 
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, Integer
 from sqlalchemy import func
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
@@ -17,7 +17,7 @@ class User(Base):
     __tablename__ = "user"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    telegram_id: Mapped[int]
+    telegram_id: Mapped[int] = mapped_column(Integer, unique=True)
     program_id: Mapped[int] = mapped_column(ForeignKey("program.id"))
 
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
