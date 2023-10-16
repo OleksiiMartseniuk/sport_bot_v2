@@ -51,15 +51,16 @@ class ImportDataService:
                         image_path = await self.__download_image(
                             url=obj.exercise_image_url,
                         )
-                        await self.uow.exercise.update(
-                            id=exercise.id,
-                            data={"image": image_path},
-                        )
+                        if image_path:
+                            await self.uow.exercise.update(
+                                id=exercise.id,
+                                data={"image": image_path},
+                            )
                     await self.uow.commit()
             except Exception as ex:
                 self.logger.error(f"Error import line[{idx}]", exc_info=ex)
 
-    async def __download_image(self, url: str) -> str:
+    async def __download_image(self, url: str) -> str | None:
         name_file = IMAGES_DIR / f'image_{uuid.uuid4()}.png'
         async with httpx.AsyncClient() as client:
             response = await client.get(url)
