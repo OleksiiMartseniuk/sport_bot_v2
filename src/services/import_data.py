@@ -67,6 +67,7 @@ class ImportDataService:
             if response.is_success:
                 async with aiofiles.open(name_file, mode="wb") as file:
                     await file.write(response.read())
+                    return name_file.__str__()
             else:
                 self.logger.error(f"No image loaded [{url}]")
-        return name_file.__str__()
+        return None
