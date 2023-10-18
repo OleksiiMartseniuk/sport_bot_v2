@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import TypeVar, Generic
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import insert, select, update, delete
@@ -22,7 +23,10 @@ class AbstractRepository(ABC):
         ...
 
 
-class SqlAlchemyRepository(AbstractRepository):
+SqlAlchemyModel = TypeVar("SqlAlchemyModel")
+
+
+class SqlAlchemyRepository(AbstractRepository, Generic[SqlAlchemyModel]):
     model = None
 
     def __init__(self, session: AsyncSession):
@@ -33,7 +37,7 @@ class SqlAlchemyRepository(AbstractRepository):
         res = await self.session.execute(stmt)
         return res.scalar_one()
 
-    async def get(self, **filters) -> model:
+    async def get(self, **filters) -> SqlAlchemyModel:
         stmt = select(self.model).filter_by(**filters)
         res = await self.session.execute(stmt)
         return res.scalar_one()
@@ -54,7 +58,7 @@ class SqlAlchemyRepository(AbstractRepository):
         res = await self.session.execute(stmt)
         return res.scalar_one()
 
-    async def get_or_create(self, **filter) -> model:
+    async def get_or_create(self, **filter) -> SqlAlchemyModel:
         stmt = select(self.model).filter_by(**filter)
         res = await self.session.execute(stmt)
         one = res.scalar_one_or_none()
