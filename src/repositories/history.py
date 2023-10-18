@@ -2,5 +2,5 @@ from src.database.models.history import HistoryExercise
 from src.utils.repository import SqlAlchemyRepository
 
 
-class HistoryExerciseRepository(SqlAlchemyRepository):
+class HistoryExerciseRepository(SqlAlchemyRepository[HistoryExercise]):
     model = HistoryExercise
