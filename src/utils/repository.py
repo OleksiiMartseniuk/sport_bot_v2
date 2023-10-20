@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import TypeVar, Generic
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import insert, select, update, delete
+from sqlalchemy import insert, select, update, delete, func
 
 
 class AbstractRepository(ABC):
@@ -75,3 +75,27 @@ class SqlAlchemyRepository(AbstractRepository, Generic[SqlAlchemyModel]):
         )
         res = await self.session.execute(exists_criteria)
         return res.scalar()
+
+    async def all(
+        self,
+        offset: int = 0,
+        limit: int = 10,
+        count: bool = False,
+        **filters,
+    ) -> list[SqlAlchemyModel | None] | dict:
+        stmt = (
+            select(self.model).filter_by(**filters).offset(offset).limit(limit)
+        )
+        res = await self.session.execute(stmt)
+        if count is True:
+            count = await self.count(**filters)
+            return {
+                "result": res.scalars().all(),
+                "count": count
+            }
+        return res.scalars().all()
+
+    async def count(self, **filters) -> int:
+        stmt = select(func.count(self.model.id)).filter_by(**filters)
+        res = await self.session.execute(stmt)
+        return res.scalar_one()
