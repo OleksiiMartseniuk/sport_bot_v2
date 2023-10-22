@@ -7,6 +7,7 @@ class MenuLevels(str, Enum):
     category = "category"
     program = "program"
     day = "day"
+    exercise = "exercise"
 
 
 class ProgramCallback(CallbackData, prefix="program"):
