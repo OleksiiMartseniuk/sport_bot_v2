@@ -16,6 +16,20 @@ async def categories_view(message: Message, uow: SqlAlchemyUnitOfWork):
 
 
 @program_router.callback_query(
+    ProgramCallback.filter(F.menu_level == MenuLevels.category)
+)
+async def categories_callback_view(
+    query: CallbackQuery,
+    uow: SqlAlchemyUnitOfWork,
+):
+    categories_keyboard = await ProgramKeyboard.get_categories(uow=uow)
+    await query.message.edit_text(
+        text="Categories",
+        reply_markup=categories_keyboard,
+    )
+
+
+@program_router.callback_query(
     ProgramCallback.filter(F.menu_level == MenuLevels.program)
 )
 async def programs_view(

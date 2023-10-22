@@ -47,7 +47,7 @@ class ProgramKeyboard:
                 )
             button_back = self.__get_button_back(
                 program_callback=ProgramCallback(
-                    menu_level=MenuLevels.program,
+                    menu_level=MenuLevels.category,
                     category=category_id,
                     program=program.id,
                     day=7,
