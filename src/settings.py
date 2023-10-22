@@ -24,3 +24,4 @@ DATABASE_URL_ASYNC = (
 
 # Telegram
 BOT_TOKEN = os.getenv("BOT_TOKEN")
+MENU_IMAGE_FILE_ID = os.getenv("MENU_IMAGE_FILE_ID")

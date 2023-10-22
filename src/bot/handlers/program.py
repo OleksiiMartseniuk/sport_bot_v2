@@ -5,6 +5,8 @@ from src.utils.unitofwork import SqlAlchemyUnitOfWork
 from src.bot.callback.program import ProgramCallback, MenuLevels
 from src.bot.keyboards.inline.program import ProgramKeyboard
 
+from src.settings import MENU_IMAGE_FILE_ID
+
 
 program_router = Router()
 
@@ -12,7 +14,11 @@ program_router = Router()
 @program_router.message()
 async def categories_view(message: Message, uow: SqlAlchemyUnitOfWork):
     categories_keyboard = await ProgramKeyboard.get_categories(uow=uow)
-    await message.answer("Categories", reply_markup=categories_keyboard)
+    await message.answer_photo(
+        caption="Categories",
+        photo=MENU_IMAGE_FILE_ID,
+        reply_markup=categories_keyboard,
+    )
 
 
 @program_router.callback_query(
@@ -23,8 +29,8 @@ async def categories_callback_view(
     uow: SqlAlchemyUnitOfWork,
 ):
     categories_keyboard = await ProgramKeyboard.get_categories(uow=uow)
-    await query.message.edit_text(
-        text="Categories",
+    await query.message.edit_caption(
+        caption="Categories",
         reply_markup=categories_keyboard,
     )
 
@@ -41,8 +47,8 @@ async def programs_view(
         uow=uow,
         category_id=callback_data.category,
     )
-    await query.message.edit_text(
-        text="Programs",
+    await query.message.edit_caption(
+        caption="Programs",
         reply_markup=programs_keyboard,
     )
 
@@ -60,8 +66,8 @@ async def program_days_view(
         category_id=callback_data.category,
         program_id=callback_data.program,
     )
-    await query.message.edit_text(
-        text="Days",
+    await query.message.edit_caption(
+        caption="Days",
         reply_markup=days_keyboard,
     )
 
