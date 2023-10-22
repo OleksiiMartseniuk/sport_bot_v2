@@ -2,7 +2,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from src.utils.unitofwork import SqlAlchemyUnitOfWork
-from src.utils.utils import WeekDict
+from src.utils.utils import WeekDict, Week
 from src.bot.callback.program import ProgramCallback, MenuLevels
 
 
@@ -87,7 +87,7 @@ class ProgramKeyboard:
                 builder.button(
                     text=WeekDict.get(day.value, "Undefined"),
                     callback_data=ProgramCallback(
-                        menu_level=MenuLevels.exercise,
+                        menu_level=MenuLevels.exercises,
                         category=category_id,
                         program=program_id,
                         day=day.value,
@@ -103,5 +103,43 @@ class ProgramKeyboard:
                     exercise=0,
                 )
             )
+            builder.adjust(3)
+            builder.attach(InlineKeyboardBuilder.from_markup(button_back))
+            return builder.as_markup()
+
+    async def get_exercises(
+        self,
+        uow: SqlAlchemyUnitOfWork,
+        category_id: int,
+        program_id: int,
+        day: int,
+    ) -> InlineKeyboardMarkup:
+        async with uow:
+            exercises = await uow.exercise.all(
+                program_id=program_id,
+                day=Week(day),
+            )
+            builder = InlineKeyboardBuilder()
+            for exercise in exercises:
+                builder.button(
+                    text=exercise.title,
+                    callback_data=ProgramCallback(
+                        menu_level=MenuLevels.exercise,
+                        category=category_id,
+                        program=program_id,
+                        day=day,
+                        exercise=exercise.id,
+                    )
+                )
+            button_back = self.__get_button_back(
+                program_callback=ProgramCallback(
+                    menu_level=MenuLevels.day,
+                    category=category_id,
+                    program=program_id,
+                    day=7,
+                    exercise=0,
+                )
+            )
+            builder.adjust(1)
             builder.attach(InlineKeyboardBuilder.from_markup(button_back))
             return builder.as_markup()

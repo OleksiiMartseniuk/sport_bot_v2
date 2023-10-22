@@ -7,6 +7,7 @@ class MenuLevels(str, Enum):
     category = "category"
     program = "program"
     day = "day"
+    exercises = "exercises"
     exercise = "exercise"
 
 
