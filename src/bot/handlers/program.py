@@ -45,3 +45,23 @@ async def programs_view(
         text="Programs",
         reply_markup=programs_keyboard,
     )
+
+
+@program_router.callback_query(
+    ProgramCallback.filter(F.menu_level == MenuLevels.day)
+)
+async def program_days_view(
+    query: CallbackQuery,
+    callback_data: ProgramCallback,
+    uow: SqlAlchemyUnitOfWork,
+):
+    days_keyboard = await ProgramKeyboard().get_program_days(
+        uow=uow,
+        category_id=callback_data.category,
+        program_id=callback_data.program,
+    )
+    await query.message.edit_text(
+        text="Days",
+        reply_markup=days_keyboard,
+    )
+
