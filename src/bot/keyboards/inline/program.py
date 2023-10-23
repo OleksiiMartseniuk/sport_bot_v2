@@ -4,6 +4,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from src.utils.unitofwork import SqlAlchemyUnitOfWork
 from src.utils.utils import WeekDict, Week
 from src.bot.callback.program import ProgramCallback, MenuLevels
+from src.database.models.program import Exercise
 
 
 class ProgramKeyboard:
@@ -143,3 +144,55 @@ class ProgramKeyboard:
             builder.adjust(1)
             builder.attach(InlineKeyboardBuilder.from_markup(button_back))
             return builder.as_markup()
+
+    async def get_exercise(
+        self,
+        uow: SqlAlchemyUnitOfWork,
+        category_id: int,
+        program_id: int,
+        day: int,
+        exercise_id: int,
+        telegram_id: int,
+    ):
+        async with uow:
+            exercises = await uow.exercise.get(id=exercise_id)
+            user = await uow.user.get(telegram_id=telegram_id)
+            history_count = await uow.history_exercise.count(
+                user_id=user.id,
+                program_id=program_id,
+                exercise_id=exercise_id,
+            )
+            text = self.get_exercise_description(
+                exercises=exercises,
+                current_approach=history_count,
+            )
+            if user.program_id == program_id:
+                pass
+            else:
+                pass
+
+        return text
+
+    @staticmethod
+    def get_exercise_description(
+        exercises: Exercise,
+        current_approach: int | None,
+    ):
+        text = (
+            f"<b>{exercises.title}</b>\n\n"
+            f"Количество повторений: "
+            f"<b>{exercises.number_of_repetitions}</b>\n"
+        )
+        if exercises.rest:
+            text += f"Отдых между подходами: <b>{exercises.rest / 60} м</b>\n"
+        if current_approach:
+            text += (
+                f"Количество подходов: <b>{exercises.number_of_approaches}</b>"
+                f"/<b>{current_approach}</b>\n"
+            )
+        else:
+            text += (
+                f"Количество подходов: "
+                f"<b>{exercises.number_of_approaches}</b>\n"
+            )
+        return text

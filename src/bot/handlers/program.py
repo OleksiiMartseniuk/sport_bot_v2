@@ -90,3 +90,32 @@ async def exercises_view(
         caption="Exercises",
         reply_markup=exercises_keyboard,
     )
+
+
+@program_router.callback_query(
+    ProgramCallback.filter(F.menu_level == MenuLevels.exercise)
+)
+async def exercise_view(
+    query: CallbackQuery,
+    callback_data: ProgramCallback,
+    uow: SqlAlchemyUnitOfWork,
+):
+
+    a = query.from_user.id
+    # get exercise text and image
+    # get button [+/- confirm] number_of_repetitions if user subscribe to program
+    # get button subscribe/unsubscribe
+    # get button back
+    print(query)
+    text = await ProgramKeyboard().get_exercise(
+        uow=uow,
+        category_id=callback_data.category,
+        program_id=callback_data.program,
+        day=callback_data.day,
+        exercise_id=callback_data.exercise,
+        telegram_id=query.from_user.id
+    )
+    await query.message.edit_caption(
+        caption=text,
+        # reply_markup=exercises_keyboard,
+    )
