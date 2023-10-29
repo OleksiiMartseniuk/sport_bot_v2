@@ -1,10 +1,19 @@
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from datetime import datetime
+
+from aiogram.types import (
+    InlineKeyboardMarkup,
+    InlineKeyboardButton,
+    FSInputFile,
+    InputMediaPhoto,
+)
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from src.utils.unitofwork import SqlAlchemyUnitOfWork
 from src.utils.utils import WeekDict, Week
 from src.bot.callback.program import ProgramCallback, MenuLevels
 from src.database.models.program import Exercise
+from src.services.history import HistoryService
+from src.settings import MENU_IMAGE_FILE_ID
 
 
 class ProgramKeyboard:
@@ -114,7 +123,7 @@ class ProgramKeyboard:
         category_id: int,
         program_id: int,
         day: int,
-    ) -> InlineKeyboardMarkup:
+    ) -> tuple[InlineKeyboardMarkup, InputMediaPhoto]:
         async with uow:
             exercises = await uow.exercise.all(
                 program_id=program_id,
@@ -143,56 +152,167 @@ class ProgramKeyboard:
             )
             builder.adjust(1)
             builder.attach(InlineKeyboardBuilder.from_markup(button_back))
-            return builder.as_markup()
+            media = InputMediaPhoto(
+                media=MENU_IMAGE_FILE_ID,
+                caption="Exercises",
+            )
+            return builder.as_markup(), media
 
     async def get_exercise(
         self,
         uow: SqlAlchemyUnitOfWork,
-        category_id: int,
-        program_id: int,
-        day: int,
-        exercise_id: int,
+        callback: ProgramCallback,
         telegram_id: int,
-    ):
+        today: datetime,
+    ) -> tuple[InlineKeyboardMarkup, InputMediaPhoto, bool]:
+        builder = InlineKeyboardBuilder()
+        calculate_result = self.calculate(
+            action=callback.action,
+            value=callback.value,
+        )
+        callback_data = ProgramCallback(
+            category=callback.category,
+            menu_level=MenuLevels.exercise,
+            program=callback.program,
+            day=callback.day,
+            exercise=callback.exercise,
+            value=calculate_result,
+        )
         async with uow:
-            exercises = await uow.exercise.get(id=exercise_id)
             user = await uow.user.get(telegram_id=telegram_id)
+            exercise = await uow.exercise.get(id=callback.exercise)
+            # TODO: Add method filter date to history repositories
             history_count = await uow.history_exercise.count(
                 user_id=user.id,
-                program_id=program_id,
-                exercise_id=exercise_id,
+                program_id=callback.program,
+                exercise_id=callback.exercise,
+                # add date today
             )
+            if callback.confirm:
+                await HistoryService.create_history_exercise(
+                    uow_transaction=uow,
+                    exercise_id=callback.exercise,
+                    user_id=user.id,
+                    program_id=callback.program,
+                    approach=history_count + 1,
+                    number_of_repetitions=callback.value,
+                )
+                callback_data.value, calculate_result = 0, 0
+                # TODO: Add method filter date to history repositories
+                history_count = await uow.history_exercise.count(
+                    user_id=user.id,
+                    program_id=callback.program,
+                    exercise_id=callback.exercise,
+                    # exercises.created_at
+                )
+
             text = self.get_exercise_description(
-                exercises=exercises,
+                exercise=exercise,
                 current_approach=history_count,
             )
-            if user.program_id == program_id:
-                pass
-            else:
-                pass
 
-        return text
+            if (
+                user.program_id == callback.program and
+                history_count < exercise.number_of_approaches and
+                today.weekday() == callback.day
+            ):
+                text += (
+                    f"{'=' * 20}"
+                    f"\nКоличество сделанных повторений: {calculate_result}\n"
+                )
+                increment_callback_data = callback_data.model_copy()
+                decrement_callback_data = callback_data.model_copy()
+                confirm_callback_data = callback_data.model_copy()
+                confirm_callback_data.confirm = True
+                increment_callback_data.action = "+1"
+                decrement_callback_data.action = "-1"
+                buttons = [
+                    [
+                        InlineKeyboardButton(
+                            text=increment_callback_data.action,
+                            callback_data=increment_callback_data.pack(),
+                        ),
+                        InlineKeyboardButton(
+                            text=decrement_callback_data.action,
+                            callback_data=decrement_callback_data.pack(),
+                        ),
+                    ],
+                    [
+                        InlineKeyboardButton(
+                            text="Подтвердить",
+                            callback_data=confirm_callback_data.pack()
+                        ),
+                    ]
+                ]
+                keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
+                builder.attach(InlineKeyboardBuilder.from_markup(keyboard))
+
+            button_back = self.__get_button_back(
+                program_callback=ProgramCallback(
+                    menu_level=MenuLevels.exercises,
+                    category=callback.category,
+                    program=callback.program,
+                    day=callback.day,
+                    exercise=callback.exercise,
+                )
+            )
+            builder.attach(InlineKeyboardBuilder.from_markup(button_back))
+            media, created_image = self.get_media(exercise=exercise, text=text)
+        return builder.as_markup(), media, created_image
 
     @staticmethod
     def get_exercise_description(
-        exercises: Exercise,
+        exercise: Exercise,
         current_approach: int | None,
     ):
         text = (
-            f"<b>{exercises.title}</b>\n\n"
+            f"<b>{exercise.title}</b>\n\n"
             f"Количество повторений: "
-            f"<b>{exercises.number_of_repetitions}</b>\n"
+            f"<b>{exercise.number_of_repetitions}</b>\n"
         )
-        if exercises.rest:
-            text += f"Отдых между подходами: <b>{exercises.rest / 60} м</b>\n"
+        if exercise.rest:
+            text += f"Отдых между подходами: <b>{exercise.rest / 60} м</b>\n"
         if current_approach:
             text += (
-                f"Количество подходов: <b>{exercises.number_of_approaches}</b>"
+                f"Количество подходов: <b>{exercise.number_of_approaches}</b>"
                 f"/<b>{current_approach}</b>\n"
             )
         else:
             text += (
                 f"Количество подходов: "
-                f"<b>{exercises.number_of_approaches}</b>\n"
+                f"<b>{exercise.number_of_approaches}</b>\n"
             )
         return text
+
+    @staticmethod
+    def get_media(
+        exercise: Exercise,
+        text: str,
+    ) -> tuple[InputMediaPhoto, bool]:
+        if exercise.telegram_image_id:
+            media = InputMediaPhoto(
+                media=exercise.telegram_image_id,
+                caption=text,
+            )
+            return media, True
+        elif exercise.telegram_image_id is None and exercise.image:
+            media = InputMediaPhoto(
+                media=FSInputFile(path=exercise.image),
+                caption=text,
+            )
+            return media, False
+        else:
+            media = InputMediaPhoto(
+                media=MENU_IMAGE_FILE_ID,
+                caption=text,
+            )
+            return media, True
+
+    @staticmethod
+    def calculate(action: str | None = None, value: int = 0) -> int:
+        if action == "-1":
+            if value > 0:
+                value = value - 1
+        elif action == "+1":
+            value = value + 1
+        return value
