@@ -80,14 +80,14 @@ async def exercises_view(
     callback_data: ProgramCallback,
     uow: SqlAlchemyUnitOfWork,
 ):
-    exercises_keyboard = await ProgramKeyboard().get_exercises(
+    exercises_keyboard, media = await ProgramKeyboard().get_exercises(
         uow=uow,
         category_id=callback_data.category,
         program_id=callback_data.program,
         day=callback_data.day,
     )
-    await query.message.edit_caption(
-        caption="Exercises",
+    await query.message.edit_media(
+        media=media,
         reply_markup=exercises_keyboard,
     )
 
@@ -100,22 +100,26 @@ async def exercise_view(
     callback_data: ProgramCallback,
     uow: SqlAlchemyUnitOfWork,
 ):
-
-    a = query.from_user.id
-    # get exercise text and image
-    # get button [+/- confirm] number_of_repetitions if user subscribe to program
-    # get button subscribe/unsubscribe
-    # get button back
-    print(query)
-    text = await ProgramKeyboard().get_exercise(
+    keyboard, media, created_image = await ProgramKeyboard().get_exercise(
         uow=uow,
-        category_id=callback_data.category,
-        program_id=callback_data.program,
-        day=callback_data.day,
-        exercise_id=callback_data.exercise,
-        telegram_id=query.from_user.id
+        telegram_id=query.from_user.id,
+        callback=callback_data,
+        today=query.message.date,
     )
-    await query.message.edit_caption(
-        caption=text,
-        # reply_markup=exercises_keyboard,
-    )
+
+    if created_image is False:
+        response = await query.message.edit_media(
+            media=media,
+            reply_markup=keyboard,
+        )
+        async with uow:
+            await uow.exercise.update(
+                data={"telegram_image_id": response.photo[-1].file_id},
+                id=callback_data.exercise,
+            )
+            await uow.commit()
+    else:
+        await query.message.edit_media(
+            media=media,
+            reply_markup=keyboard,
+        )
