@@ -17,3 +17,7 @@ class ProgramCallback(CallbackData, prefix="program"):
     program: int
     day: int
     exercise: int
+    # Actions
+    action: str | None = None
+    value: int = 0
+    confirm: bool = False
