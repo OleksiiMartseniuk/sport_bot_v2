@@ -35,6 +35,7 @@ class ProgramKeyboard:
                         exercise=0,
                     ),
                 )
+            builder.adjust(1)
         return builder.as_markup()
 
     async def get_program(
@@ -65,6 +66,7 @@ class ProgramKeyboard:
                     exercise=0,
                 )
             )
+            builder.adjust(1)
             builder.attach(InlineKeyboardBuilder.from_markup(button_back))
         return builder.as_markup()
 
@@ -113,7 +115,7 @@ class ProgramKeyboard:
                     exercise=0,
                 )
             )
-            builder.adjust(3)
+            builder.adjust(2)
             builder.attach(InlineKeyboardBuilder.from_markup(button_back))
             return builder.as_markup()
 
