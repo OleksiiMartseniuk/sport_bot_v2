@@ -221,10 +221,11 @@ class ProgramKeyboard:
                 increment_callback_data = callback_data.model_copy()
                 decrement_callback_data = callback_data.model_copy()
                 confirm_callback_data = callback_data.model_copy()
+                full_value_callback_data = callback_data.model_copy()
+                full_value_callback_data.value = exercise.number_of_repetitions
                 confirm_callback_data.confirm = True
                 increment_callback_data.action = "+1"
                 decrement_callback_data.action = "-1"
-                # TODO: add button set full value approaches
                 buttons = [
                     [
                         InlineKeyboardButton(
@@ -243,6 +244,16 @@ class ProgramKeyboard:
                         ),
                     ]
                 ]
+                if self.is_percent_repetitions(
+                    value=calculate_result,
+                    repetitions=exercise.number_of_repetitions,
+                ):
+                    buttons[0].append(
+                        InlineKeyboardButton(
+                            text=f"Set {full_value_callback_data.value}",
+                            callback_data=full_value_callback_data.pack(),
+                        ),
+                    )
                 keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
                 builder.attach(InlineKeyboardBuilder.from_markup(keyboard))
 
@@ -315,3 +326,8 @@ class ProgramKeyboard:
         elif action == "+1":
             value = value + 1
         return value
+
+    @staticmethod
+    def is_percent_repetitions(value: int, repetitions: int) -> bool:
+        percent = 80
+        return int((value / repetitions) * 100) < percent
