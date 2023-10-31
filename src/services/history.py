@@ -44,13 +44,11 @@ class HistoryService:
                 f"{exercise.number_of_approaches}]."
             )
 
-        # TODO: Add method filter date to history repositories
-        is_history_exercise = await uow_transaction.history_exercise.exists(
-            **arguments,
-            created_at=datetime.utcnow().date()
-            # add date today
+        is_count = (
+            await uow_transaction.history_exercise
+            .get_count_history_today(**arguments)
         )
-        if is_history_exercise is True:
+        if is_count:
             raise ValueError(f"HistoryExercise is exists {arguments}.")
 
         await uow_transaction.history_exercise.create(data=arguments)

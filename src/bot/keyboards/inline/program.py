@@ -181,12 +181,10 @@ class ProgramKeyboard:
         async with uow:
             user = await uow.user.get(telegram_id=telegram_id)
             exercise = await uow.exercise.get(id=callback.exercise)
-            # TODO: Add method filter date to history repositories
-            history_count = await uow.history_exercise.count(
+            history_count = await uow.history_exercise.get_count_history_today(
                 user_id=user.id,
                 program_id=callback.program,
                 exercise_id=callback.exercise,
-                # add date today
             )
             if callback.confirm:
                 await HistoryService.create_history_exercise(
@@ -198,12 +196,12 @@ class ProgramKeyboard:
                     number_of_repetitions=callback.value,
                 )
                 callback_data.value, calculate_result = 0, 0
-                # TODO: Add method filter date to history repositories
-                history_count = await uow.history_exercise.count(
-                    user_id=user.id,
-                    program_id=callback.program,
-                    exercise_id=callback.exercise,
-                    # exercises.created_at
+                history_count = (
+                    await uow.history_exercise.get_count_history_today(
+                        user_id=user.id,
+                        program_id=callback.program,
+                        exercise_id=callback.exercise,
+                    )
                 )
 
             text = self.get_exercise_description(
@@ -226,6 +224,7 @@ class ProgramKeyboard:
                 confirm_callback_data.confirm = True
                 increment_callback_data.action = "+1"
                 decrement_callback_data.action = "-1"
+                # TODO: add button set full value approaches
                 buttons = [
                     [
                         InlineKeyboardButton(
