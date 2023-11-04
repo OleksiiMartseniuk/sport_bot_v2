@@ -1,5 +1,6 @@
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
+from aiogram.filters import Command
 
 from src.utils.unitofwork import SqlAlchemyUnitOfWork
 from src.bot.callback.program import ProgramCallback, MenuLevels
@@ -11,7 +12,7 @@ from src.settings import MENU_IMAGE_FILE_ID
 program_router = Router()
 
 
-@program_router.message()
+@program_router.message(Command("program"))
 async def categories_view(message: Message, uow: SqlAlchemyUnitOfWork):
     categories_keyboard = await ProgramKeyboard.get_categories(uow=uow)
     await message.answer_photo(

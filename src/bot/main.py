@@ -1,5 +1,6 @@
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
+from aiogram.types import BotCommand
 
 from src.settings import BOT_TOKEN
 from src.bot.handlers.program import program_router
@@ -18,4 +19,13 @@ async def main() -> None:
     )
 
     bot = Bot(BOT_TOKEN, parse_mode=ParseMode.HTML)
+
+    await bot.set_my_commands(
+        [
+            BotCommand(
+                command="program",
+                description="Программа тренировок",
+            ),
+        ]
+    )
     await dp.start_polling(bot)
