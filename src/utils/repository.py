@@ -81,10 +81,15 @@ class SqlAlchemyRepository(AbstractRepository, Generic[SqlAlchemyModel]):
         offset: int = 0,
         limit: int = 10,
         count: bool = False,
+        order_by: str = "id",
         **filters,
     ) -> list[SqlAlchemyModel | None] | dict:
         stmt = (
-            select(self.model).filter_by(**filters).offset(offset).limit(limit)
+            select(self.model)
+            .filter_by(**filters)
+            .order_by(order_by)
+            .offset(offset)
+            .limit(limit)
         )
         res = await self.session.execute(stmt)
         if count is True:
