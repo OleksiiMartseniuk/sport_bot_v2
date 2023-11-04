@@ -3,12 +3,15 @@ from aiogram.enums import ParseMode
 
 from src.settings import BOT_TOKEN
 from src.bot.handlers.program import program_router
+from src.bot.middlewares.registration import RegistrationUserMiddleware
 from src.utils.unitofwork import SqlAlchemyUnitOfWork
 
 
 async def main() -> None:
     dp = Dispatcher()
     dp["uow"] = SqlAlchemyUnitOfWork()
+
+    dp.update.outer_middleware(RegistrationUserMiddleware())
 
     dp.include_routers(
         program_router,
