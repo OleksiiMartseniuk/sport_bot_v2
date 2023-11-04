@@ -47,6 +47,8 @@ async def programs_view(
     programs_keyboard = await ProgramKeyboard().get_program(
         uow=uow,
         category_id=callback_data.category,
+        subscription=callback_data.subscription,
+        telegram_id=query.from_user.id,
     )
     await query.message.edit_caption(
         caption="Programs",

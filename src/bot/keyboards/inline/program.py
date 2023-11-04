@@ -13,6 +13,7 @@ from src.utils.utils import WeekDict, Week
 from src.bot.callback.program import ProgramCallback, MenuLevels
 from src.database.models.program import Exercise
 from src.services.history import HistoryService
+from src.services.profile import ProfileService
 from src.settings import MENU_IMAGE_FILE_ID
 
 
@@ -42,9 +43,19 @@ class ProgramKeyboard:
         self,
         uow: SqlAlchemyUnitOfWork,
         category_id: int,
+        subscription: int,
+        telegram_id: int,
     ) -> InlineKeyboardMarkup:
+        subscribe = "Подписаться"
+        unsubscribe = "Отписаться"
         async with (uow):
             builder = InlineKeyboardBuilder()
+            await self.__subscription(
+                subscription=subscription,
+                telegram_id=telegram_id,
+                uow_transaction=uow,
+            )
+            user = await uow.user.get(telegram_id=telegram_id)
             programs = await uow.program.all(category_id=category_id)
             for program in programs:
                 builder.button(
@@ -53,6 +64,20 @@ class ProgramKeyboard:
                         menu_level=MenuLevels.day,
                         category=category_id,
                         program=program.id,
+                        day=7,
+                        exercise=0,
+                    )
+                )
+                text = (
+                    unsubscribe if program.id == user.program_id else subscribe
+                )
+                builder.button(
+                    text=text,
+                    callback_data=ProgramCallback(
+                        menu_level=MenuLevels.program,
+                        category=category_id,
+                        program=0,
+                        subscription=program.id,
                         day=7,
                         exercise=0,
                     )
@@ -66,9 +91,29 @@ class ProgramKeyboard:
                     exercise=0,
                 )
             )
-            builder.adjust(1)
+            builder.adjust(2)
             builder.attach(InlineKeyboardBuilder.from_markup(button_back))
         return builder.as_markup()
+
+    @staticmethod
+    async def __subscription(
+        subscription: int,
+        telegram_id: int,
+        uow_transaction: SqlAlchemyUnitOfWork,
+    ) -> None:
+        if subscription != 0:
+            user = await uow_transaction.user.get(telegram_id=telegram_id)
+            if subscription == user.program_id:
+                await ProfileService.unsubscribe_to_program(
+                    uow_transaction=uow_transaction,
+                    id=user.id,
+                )
+            else:
+                await ProfileService.subscribe_to_program(
+                    program_id=subscription,
+                    uow_transaction=uow_transaction,
+                    id=user.id
+                )
 
     @staticmethod
     def __get_button_back(
@@ -333,3 +378,6 @@ class ProgramKeyboard:
     def is_percent_repetitions(value: int, repetitions: int) -> bool:
         percent = 80
         return int((value / repetitions) * 100) < percent
+
+    # TODO: Add button subscribe to program
+    # TODO: add params "cascade" in models
