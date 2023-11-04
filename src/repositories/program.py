@@ -15,7 +15,9 @@ class ExerciseRepository(SqlAlchemyRepository[Exercise]):
     async def get_program_days(self, program_id: int) -> list[Week]:
         stmt = (
             select(self.model.day)
-            .where(self.model.program_id == program_id).distinct()
+            .where(self.model.program_id == program_id)
+            .order_by(self.model.day)
+            .distinct()
         )
         res = await self.session.execute(stmt)
         return res.scalars().all()
