@@ -45,7 +45,7 @@ class ProgramKeyboard:
         category_id: int,
         subscription: int,
         telegram_id: int,
-    ) -> InlineKeyboardMarkup:
+    ) -> tuple[InlineKeyboardMarkup, str]:
         subscribe = "Подписаться"
         unsubscribe = "Отписаться"
         async with (uow):
@@ -93,7 +93,8 @@ class ProgramKeyboard:
             )
             builder.adjust(2)
             builder.attach(InlineKeyboardBuilder.from_markup(button_back))
-        return builder.as_markup()
+            category = await uow.category.get(id=category_id)
+            return builder.as_markup(), category.title
 
     @staticmethod
     async def __subscription(
@@ -122,7 +123,7 @@ class ProgramKeyboard:
         button_back = [
             [
                 InlineKeyboardButton(
-                    text="Back",
+                    text="Назад",
                     callback_data=program_callback.pack()
                 )
             ]
@@ -134,7 +135,7 @@ class ProgramKeyboard:
         uow: SqlAlchemyUnitOfWork,
         category_id: int,
         program_id: int,
-    ) -> InlineKeyboardMarkup:
+    ) -> tuple[InlineKeyboardMarkup, str]:
         async with uow:
             days_db = await uow.exercise.get_program_days(
                 program_id=program_id,
@@ -162,7 +163,8 @@ class ProgramKeyboard:
             )
             builder.adjust(2)
             builder.attach(InlineKeyboardBuilder.from_markup(button_back))
-            return builder.as_markup()
+            program = await uow.program.get(id=program_id)
+            return builder.as_markup(), program.title
 
     async def get_exercises(
         self,
@@ -201,7 +203,7 @@ class ProgramKeyboard:
             builder.attach(InlineKeyboardBuilder.from_markup(button_back))
             media = InputMediaPhoto(
                 media=MENU_IMAGE_FILE_ID,
-                caption="Exercises",
+                caption=WeekDict[day],
             )
             return builder.as_markup(), media
 
@@ -378,6 +380,3 @@ class ProgramKeyboard:
     def is_percent_repetitions(value: int, repetitions: int) -> bool:
         percent = 80
         return int((value / repetitions) * 100) < percent
-
-    # TODO: Add button subscribe to program
-    # TODO: add params "cascade" in models

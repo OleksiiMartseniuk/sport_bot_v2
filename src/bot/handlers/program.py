@@ -16,7 +16,7 @@ program_router = Router()
 async def categories_view(message: Message, uow: SqlAlchemyUnitOfWork):
     categories_keyboard = await ProgramKeyboard.get_categories(uow=uow)
     await message.answer_photo(
-        caption="Categories",
+        caption="Категории",
         photo=MENU_IMAGE_FILE_ID,
         reply_markup=categories_keyboard,
     )
@@ -31,7 +31,7 @@ async def categories_callback_view(
 ):
     categories_keyboard = await ProgramKeyboard.get_categories(uow=uow)
     await query.message.edit_caption(
-        caption="Categories",
+        caption="Категории",
         reply_markup=categories_keyboard,
     )
 
@@ -44,14 +44,14 @@ async def programs_view(
     callback_data: ProgramCallback,
     uow: SqlAlchemyUnitOfWork,
 ):
-    programs_keyboard = await ProgramKeyboard().get_program(
+    programs_keyboard, text = await ProgramKeyboard().get_program(
         uow=uow,
         category_id=callback_data.category,
         subscription=callback_data.subscription,
         telegram_id=query.from_user.id,
     )
     await query.message.edit_caption(
-        caption="Programs",
+        caption=text,
         reply_markup=programs_keyboard,
     )
 
@@ -64,13 +64,13 @@ async def program_days_view(
     callback_data: ProgramCallback,
     uow: SqlAlchemyUnitOfWork,
 ):
-    days_keyboard = await ProgramKeyboard().get_program_days(
+    days_keyboard, text = await ProgramKeyboard().get_program_days(
         uow=uow,
         category_id=callback_data.category,
         program_id=callback_data.program,
     )
     await query.message.edit_caption(
-        caption="Days",
+        caption=text,
         reply_markup=days_keyboard,
     )
 
