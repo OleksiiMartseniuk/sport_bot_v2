@@ -58,16 +58,16 @@ class SqlAlchemyRepository(AbstractRepository, Generic[SqlAlchemyModel]):
         res = await self.session.execute(stmt)
         return res.scalar_one()
 
-    async def get_or_create(self, **filter) -> SqlAlchemyModel:
+    async def get_or_create(self, **filter) -> tuple[bool, SqlAlchemyModel]:
         stmt = select(self.model).filter_by(**filter)
         res = await self.session.execute(stmt)
         one = res.scalar_one_or_none()
         if one:
-            return one
+            return False, one
         else:
             stmt = insert(self.model).values(**filter).returning(self.model)
             res = await self.session.execute(stmt)
-            return res.scalar_one()
+            return True, res.scalar_one()
 
     async def exists(self, **filters) -> bool:
         exists_criteria = (

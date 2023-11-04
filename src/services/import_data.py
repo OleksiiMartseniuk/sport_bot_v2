@@ -36,14 +36,14 @@ class ImportDataService:
             try:
                 obj = File(**item)
                 async with self.uow:
-                    category = await self.uow.category.get_or_create(
+                    _, category = await self.uow.category.get_or_create(
                         title=obj.category
                     )
-                    program = await self.uow.program.get_or_create(
+                    _, program = await self.uow.program.get_or_create(
                         title=obj.program,
                         category_id=category.id,
                     )
-                    exercise = await self.uow.exercise.get_or_create(
+                    _, exercise = await self.uow.exercise.get_or_create(
                         program_id=program.id,
                         **obj.get_fields_exercise(),
                     )
