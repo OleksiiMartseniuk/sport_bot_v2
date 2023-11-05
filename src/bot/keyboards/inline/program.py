@@ -281,10 +281,6 @@ class ProgramKeyboard:
                             text=increment_callback_data.action,
                             callback_data=increment_callback_data.pack(),
                         ),
-                        InlineKeyboardButton(
-                            text=decrement_callback_data.action,
-                            callback_data=decrement_callback_data.pack(),
-                        ),
                     ],
                     [
                         InlineKeyboardButton(
@@ -293,6 +289,13 @@ class ProgramKeyboard:
                         ),
                     ]
                 ]
+                if calculate_result > 0:
+                    buttons[0].append(
+                        InlineKeyboardButton(
+                            text=decrement_callback_data.action,
+                            callback_data=decrement_callback_data.pack(),
+                        ),
+                    )
                 if self.is_percent_repetitions(
                     value=calculate_result,
                     repetitions=exercise.number_of_repetitions,
