@@ -22,6 +22,17 @@ class AbstractRepository(ABC):
     async def delete(self, id: int):
         ...
 
+    @abstractmethod
+    async def all(
+        self,
+        offset: int,
+        limit: int,
+        count: bool,
+        order_by: str,
+        **filters,
+    ):
+        pass
+
 
 SqlAlchemyModel = TypeVar("SqlAlchemyModel")
 
