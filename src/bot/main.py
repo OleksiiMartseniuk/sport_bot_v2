@@ -1,3 +1,5 @@
+import logging
+
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.types import BotCommand
@@ -9,6 +11,11 @@ from src.utils.unitofwork import SqlAlchemyUnitOfWork
 
 
 async def main() -> None:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(levelname)s - %(name)s - %(message)s",
+    )
+
     dp = Dispatcher()
     dp["uow"] = SqlAlchemyUnitOfWork()
 
