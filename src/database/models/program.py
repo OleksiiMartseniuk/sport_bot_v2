@@ -37,10 +37,11 @@ class Program(TimestampMixin, Base):
     title: Mapped[str] = mapped_column(String(255))
     category_id: Mapped[int] = mapped_column(ForeignKey("category.id"))
 
-    category: Mapped["Category"] = relationship(back_populates="programs")
+    category: Mapped["Category"] = relationship(
+        back_populates="programs",
+    )
     users: Mapped[List["User"]] = relationship(
         back_populates="program",
-        cascade="all, delete-orphan",
     )
     exercises: Mapped[List["Exercise"]] = relationship(
         back_populates="program",
@@ -71,7 +72,9 @@ class Exercise(TimestampMixin, Base):
     )
     program_id: Mapped[int] = mapped_column(ForeignKey("program.id"))
 
-    program: Mapped["Program"] = relationship(back_populates="exercises")
+    program: Mapped["Program"] = relationship(
+        back_populates="exercises",
+    )
     history_exercises: Mapped[List["HistoryExercise"]] = relationship(
         back_populates="exercise",
         cascade="all, delete-orphan",

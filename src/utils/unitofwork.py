@@ -14,6 +14,8 @@ class UnitOfWork(ABC):
     category: CategoryRepository
     program: ProgramRepository
     exercise: ExerciseRepository
+    user: UserRepository
+    history_exercise: HistoryExerciseRepository
 
     @abstractmethod
     def __init__(self):

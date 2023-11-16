@@ -22,6 +22,17 @@ class AbstractRepository(ABC):
     async def delete(self, id: int):
         ...
 
+    @abstractmethod
+    async def all(
+        self,
+        offset: int,
+        limit: int,
+        count: bool,
+        order_by: str,
+        **filters,
+    ):
+        pass
+
 
 SqlAlchemyModel = TypeVar("SqlAlchemyModel")
 
@@ -58,16 +69,16 @@ class SqlAlchemyRepository(AbstractRepository, Generic[SqlAlchemyModel]):
         res = await self.session.execute(stmt)
         return res.scalar_one()
 
-    async def get_or_create(self, **filter) -> SqlAlchemyModel:
+    async def get_or_create(self, **filter) -> tuple[bool, SqlAlchemyModel]:
         stmt = select(self.model).filter_by(**filter)
         res = await self.session.execute(stmt)
         one = res.scalar_one_or_none()
         if one:
-            return one
+            return False, one
         else:
             stmt = insert(self.model).values(**filter).returning(self.model)
             res = await self.session.execute(stmt)
-            return res.scalar_one()
+            return True, res.scalar_one()
 
     async def exists(self, **filters) -> bool:
         exists_criteria = (
@@ -81,10 +92,15 @@ class SqlAlchemyRepository(AbstractRepository, Generic[SqlAlchemyModel]):
         offset: int = 0,
         limit: int = 10,
         count: bool = False,
+        order_by: str = "id",
         **filters,
     ) -> list[SqlAlchemyModel | None] | dict:
         stmt = (
-            select(self.model).filter_by(**filters).offset(offset).limit(limit)
+            select(self.model)
+            .filter_by(**filters)
+            .order_by(order_by)
+            .offset(offset)
+            .limit(limit)
         )
         res = await self.session.execute(stmt)
         if count is True:

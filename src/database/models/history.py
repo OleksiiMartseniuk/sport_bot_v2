@@ -28,6 +28,8 @@ class HistoryExercise(TimestampMixin, Base):
         back_populates="history_exercises",
     )
     program: Mapped["Program"] = relationship(
-        back_populates="history_exercises"
+        back_populates="history_exercises",
     )
-    user: Mapped["User"] = relationship(back_populates="history_exercises")
+    user: Mapped["User"] = relationship(
+        back_populates="history_exercises",
+    )
