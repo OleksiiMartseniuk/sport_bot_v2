@@ -9,22 +9,22 @@ class ProfileService:
     @staticmethod
     async def subscribe_to_program(
         program_id: int,
-        uow_transaction: SqlAlchemyUnitOfWork,
+        uow: SqlAlchemyUnitOfWork,
         **user_filter
     ) -> None:
-        await uow_transaction.user.update(
+        await uow.user.update(
             **user_filter,
             data={"program_id": program_id},
         )
-        await uow_transaction.commit()
+        await uow.commit()
 
     @staticmethod
     async def unsubscribe_to_program(
-        uow_transaction: SqlAlchemyUnitOfWork,
+        uow: SqlAlchemyUnitOfWork,
         **user_filter
     ) -> None:
-        await uow_transaction.user.update(
+        await uow.user.update(
             **user_filter,
             data={"program_id": None},
         )
-        await uow_transaction.commit()
+        await uow.commit()

@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 class HistoryService:
     @staticmethod
     async def create_history_exercise(
-        uow_transaction: SqlAlchemyUnitOfWork,
+        uow: SqlAlchemyUnitOfWork,
         exercise_id: int,
         user_id: int,
         program_id: int,
@@ -18,11 +18,11 @@ class HistoryService:
         is_current_program: bool = True
     ) -> None:
         arguments = locals()
-        del arguments["uow_transaction"]
+        del arguments["uow"]
         del arguments["is_current_program"]
 
         if is_current_program:
-            is_program = await uow_transaction.user.exists(
+            is_program = await uow.user.exists(
                 id=user_id,
                 program_id=program_id,
             )
@@ -31,7 +31,7 @@ class HistoryService:
                     f"User {user_id} is not subscribed to "
                     f"program {program_id}."
                 )
-        exercise = await uow_transaction.exercise.get(id=exercise_id)
+        exercise = await uow.exercise.get(id=exercise_id)
         if (
             number_of_repetitions < 0
             or approach <= 0
@@ -45,11 +45,11 @@ class HistoryService:
             )
 
         is_count = (
-            await uow_transaction.history_exercise
+            await uow.history_exercise
             .get_count_history_today(**arguments)
         )
         if is_count:
             raise ValueError(f"HistoryExercise is exists {arguments}.")
 
-        await uow_transaction.history_exercise.create(data=arguments)
-        await uow_transaction.commit()
+        await uow.history_exercise.create(data=arguments)
+        await uow.commit()

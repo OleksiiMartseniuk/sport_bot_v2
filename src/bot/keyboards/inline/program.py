@@ -53,7 +53,7 @@ class ProgramKeyboard:
             await self.__subscription(
                 subscription=subscription,
                 telegram_id=telegram_id,
-                uow_transaction=uow,
+                uow=uow,
             )
             user = await uow.user.get(telegram_id=telegram_id)
             programs = await uow.program.all(category_id=category_id)
@@ -100,19 +100,19 @@ class ProgramKeyboard:
     async def __subscription(
         subscription: int,
         telegram_id: int,
-        uow_transaction: SqlAlchemyUnitOfWork,
+        uow: SqlAlchemyUnitOfWork,
     ) -> None:
         if subscription != 0:
-            user = await uow_transaction.user.get(telegram_id=telegram_id)
+            user = await uow.user.get(telegram_id=telegram_id)
             if subscription == user.program_id:
                 await ProfileService.unsubscribe_to_program(
-                    uow_transaction=uow_transaction,
+                    uow=uow,
                     id=user.id,
                 )
             else:
                 await ProfileService.subscribe_to_program(
                     program_id=subscription,
-                    uow_transaction=uow_transaction,
+                    uow=uow,
                     id=user.id
                 )
 
@@ -237,7 +237,7 @@ class ProgramKeyboard:
             )
             if callback.confirm:
                 await HistoryService.create_history_exercise(
-                    uow_transaction=uow,
+                    uow=uow,
                     exercise_id=callback.exercise,
                     user_id=user.id,
                     program_id=callback.program,
