@@ -21,5 +21,12 @@ class RegistrationUserMiddleware(BaseMiddleware):
     @staticmethod
     async def registration_user(user: User, uow: SqlAlchemyUnitOfWork):
         async with uow:
-            await uow.user.get_or_create(telegram_id=user.id)
+            created, user_db = await uow.telegram_user.get_or_create(
+                telegram_id=user.id,
+            )
+            if created and user.username and user_db.username is None:
+                await uow.telegram_user.update(
+                    data={"username": user.username},
+                    id=user_db.id,
+                )
             await uow.commit()
