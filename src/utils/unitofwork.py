@@ -6,7 +6,7 @@ from src.repositories.program import (
     ProgramRepository,
     ExerciseRepository,
 )
-from src.repositories.user import UserRepository
+from src.repositories.telegram_user import TelegramUserRepository
 from src.repositories.history import HistoryExerciseRepository
 
 
@@ -14,7 +14,7 @@ class UnitOfWork(ABC):
     category: CategoryRepository
     program: ProgramRepository
     exercise: ExerciseRepository
-    user: UserRepository
+    telegram_user: TelegramUserRepository
     history_exercise: HistoryExerciseRepository
 
     @abstractmethod
@@ -48,7 +48,7 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
         self.category = CategoryRepository(self.session)
         self.program = ProgramRepository(self.session)
         self.exercise = ExerciseRepository(self.session)
-        self.user = UserRepository(self.session)
+        self.telegram_user = TelegramUserRepository(self.session)
         self.history_exercise = HistoryExerciseRepository(self.session)
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
