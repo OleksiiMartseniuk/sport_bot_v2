@@ -27,7 +27,7 @@ class Category(TimestampMixin, Base):
     )
 
     def __repr__(self) -> str:
-        return self.title
+        return f"[{self.id}] {self.title}"
 
 
 class Program(TimestampMixin, Base):
@@ -53,7 +53,7 @@ class Program(TimestampMixin, Base):
     )
 
     def __repr__(self) -> str:
-        return self.title
+        return f"[{self.id}] {self.title}"
 
 
 class Exercise(TimestampMixin, Base):
@@ -81,4 +81,4 @@ class Exercise(TimestampMixin, Base):
     )
 
     def __repr__(self):
-        return self.title
+        return f"[{self.id}] {self.title}"

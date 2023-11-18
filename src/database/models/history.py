@@ -33,3 +33,9 @@ class HistoryExercise(TimestampMixin, Base):
     user: Mapped["User"] = relationship(
         back_populates="history_exercises",
     )
+
+    def __repr__(self):
+        return (
+            f"HistoryExercise [{self.id}] exercise_id={self.exercise_id} "
+            f"user_id={self.user_id}, program_id={self.program_id}"
+        )
