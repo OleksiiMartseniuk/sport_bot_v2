@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 
 from src.utils.unitofwork import SqlAlchemyUnitOfWork
 
@@ -11,7 +10,7 @@ class HistoryService:
     async def create_history_exercise(
         uow: SqlAlchemyUnitOfWork,
         exercise_id: int,
-        user_id: int,
+        telegram_user_id: int,
         program_id: int,
         approach: int,
         number_of_repetitions: int,
@@ -22,13 +21,13 @@ class HistoryService:
         del arguments["is_current_program"]
 
         if is_current_program:
-            is_program = await uow.user.exists(
-                id=user_id,
+            is_program = await uow.telegram_user.exists(
+                id=telegram_user_id,
                 program_id=program_id,
             )
             if is_program is False:
                 raise ValueError(
-                    f"User {user_id} is not subscribed to "
+                    f"TelegramUser {telegram_user_id} is not subscribed to "
                     f"program {program_id}."
                 )
         exercise = await uow.exercise.get(id=exercise_id)
