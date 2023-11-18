@@ -30,7 +30,7 @@ class TelegramUser(TimestampMixin, Base):
     )
 
     def __repr__(self):
-        return f"[{self.id}] TelegramUser username={self.username}"
+        return f"[{self.id}] TelegramUser - {self.username}"
 
 
 # class User(TimestampMixin, Base):
