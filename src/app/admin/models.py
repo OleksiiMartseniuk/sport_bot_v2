@@ -1,12 +1,12 @@
 from sqladmin import ModelView
 
-from src.database.models.user import User
+from src.database.models.user import TelegramUser
 from src.database.models.program import Program, Exercise
 from src.database.models.history import HistoryExercise
 
 
-class UserAdmin(ModelView, model=User):
-    column_list = [User.id, User.telegram_id]
+class UserAdmin(ModelView, model=TelegramUser):
+    column_list = [TelegramUser.id, TelegramUser.telegram_id]
 
 
 class ProgramAdmin(ModelView, model=Program):
@@ -26,7 +26,7 @@ class HistoryExerciseAdmin(ModelView, model=HistoryExercise):
     column_list = [
         HistoryExercise.id,
         HistoryExercise.exercise,
-        HistoryExercise.user,
+        HistoryExercise.telegram_user,
         HistoryExercise.program,
     ]
     column_default_sort = ("created_at", True)
