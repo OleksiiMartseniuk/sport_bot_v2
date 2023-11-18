@@ -11,7 +11,7 @@ from src.database.mixins import TimestampMixin
 from src.utils.utils import Week
 
 if TYPE_CHECKING:
-    from .user import User
+    from .user import TelegramUser
     from .history import HistoryExercise
 
 
@@ -40,7 +40,7 @@ class Program(TimestampMixin, Base):
     category: Mapped["Category"] = relationship(
         back_populates="programs",
     )
-    users: Mapped[List["User"]] = relationship(
+    telegram_users: Mapped[List["TelegramUser"]] = relationship(
         back_populates="program",
     )
     exercises: Mapped[List["Exercise"]] = relationship(

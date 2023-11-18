@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING, Optional, List
 
-from sqlalchemy import ForeignKey, Integer
+from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
@@ -13,18 +13,29 @@ if TYPE_CHECKING:
     from .history import HistoryExercise
 
 
-class User(TimestampMixin, Base):
-    __tablename__ = "user"
+class TelegramUser(TimestampMixin, Base):
+    __tablename__ = "telegram_user"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[Optional[str]]
     telegram_id: Mapped[int] = mapped_column(Integer, unique=True)
     program_id: Mapped[Optional[int]] = mapped_column(ForeignKey("program.id"))
 
-    program: Mapped[Optional["Program"]] = relationship(back_populates="users")
+    program: Mapped[Optional["Program"]] = relationship(
+        back_populates="telegram_users",
+    )
     history_exercises: Mapped[List["HistoryExercise"]] = relationship(
-        back_populates="user",
+        back_populates="telegram_user",
         cascade="all, delete-orphan",
     )
 
     def __repr__(self):
-        return f"User [{self.id}]"
+        return f"[{self.id}] TelegramUser username={self.username}"
+
+
+# class User(TimestampMixin, Base):
+#     id: Mapped[int] = mapped_column(primary_key=True)
+#     username: Mapped[str] = mapped_column(String(20))
+#     password: Mapped[str] = mapped_column(String(30))
+#     is_staff: Mapped[bool] = mapped_column(default=False)
+#     is_superuser: Mapped[bool] = mapped_column(default=False)
