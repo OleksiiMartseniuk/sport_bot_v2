@@ -1,11 +1,25 @@
 from sqladmin import ModelView
 
-from src.database.models.user import TelegramUser
+from src.database.models.user import TelegramUser, User
+from src.database.models.token import Token
 from src.database.models.program import Program, Exercise
 from src.database.models.history import HistoryExercise
 
 
-class UserAdmin(ModelView, model=TelegramUser):
+class TokeAdmin(ModelView, model=Token):
+    column_list = [Token.id, Token.user_id]
+
+
+class UserAdmin(ModelView, model=User):
+    column_list = [
+        User.id,
+        User.username,
+        User.is_staff,
+        User.is_superuser,
+    ]
+
+
+class TelegramUserAdmin(ModelView, model=TelegramUser):
     column_list = [TelegramUser.id, TelegramUser.telegram_id]
 
 
@@ -33,7 +47,9 @@ class HistoryExerciseAdmin(ModelView, model=HistoryExercise):
 
 
 admin_view_models = [
+    TokeAdmin,
     UserAdmin,
+    TelegramUserAdmin,
     ProgramAdmin,
     ExerciseAdmin,
     HistoryExerciseAdmin,
