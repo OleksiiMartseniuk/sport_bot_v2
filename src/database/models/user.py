@@ -11,6 +11,7 @@ from src.database.mixins import TimestampMixin
 if TYPE_CHECKING:
     from .program import Program
     from .history import HistoryExercise
+    from .token import Token
 
 
 class TelegramUser(TimestampMixin, Base):
@@ -33,9 +34,16 @@ class TelegramUser(TimestampMixin, Base):
         return f"[{self.id}] TelegramUser - {self.username}"
 
 
-# class User(TimestampMixin, Base):
-#     id: Mapped[int] = mapped_column(primary_key=True)
-#     username: Mapped[str] = mapped_column(String(20))
-#     password: Mapped[str] = mapped_column(String(30))
-#     is_staff: Mapped[bool] = mapped_column(default=False)
-#     is_superuser: Mapped[bool] = mapped_column(default=False)
+class User(TimestampMixin, Base):
+    __tablename__ = "user"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    username: Mapped[str] = mapped_column(String(20), unique=True)
+    password: Mapped[str] = mapped_column(String(255))
+    is_staff: Mapped[bool] = mapped_column(default=False)
+    is_superuser: Mapped[bool] = mapped_column(default=False)
+
+    token: Mapped["Token"] = relationship(back_populates="user")
+
+    def __repr__(self):
+        return f"[{self.id} User - {self.username}]"
