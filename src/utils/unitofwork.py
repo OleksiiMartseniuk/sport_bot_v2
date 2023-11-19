@@ -7,7 +7,9 @@ from src.repositories.program import (
     ExerciseRepository,
 )
 from src.repositories.telegram_user import TelegramUserRepository
+from src.repositories.user import UserRepository
 from src.repositories.history import HistoryExerciseRepository
+from src.repositories.token import TokenRepository
 
 
 class UnitOfWork(ABC):
@@ -16,6 +18,8 @@ class UnitOfWork(ABC):
     exercise: ExerciseRepository
     telegram_user: TelegramUserRepository
     history_exercise: HistoryExerciseRepository
+    token: TokenRepository
+    user: UserRepository
 
     @abstractmethod
     def __init__(self):
@@ -50,6 +54,8 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
         self.exercise = ExerciseRepository(self.session)
         self.telegram_user = TelegramUserRepository(self.session)
         self.history_exercise = HistoryExerciseRepository(self.session)
+        self.token = TokenRepository(self.session)
+        self.user = UserRepository(self.session)
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         await self.rollback()
