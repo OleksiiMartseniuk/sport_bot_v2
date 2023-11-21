@@ -1,8 +1,8 @@
 """program
 
-Revision ID: 406b564d244f
+Revision ID: 5f9a51a9060b
 Revises: 
-Create Date: 2023-11-18 12:25:13.139262
+Create Date: 2023-11-21 21:24:19.413425
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '406b564d244f'
+revision: str = '5f9a51a9060b'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,6 +28,17 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('title')
     )
+    op.create_table('user',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('username', sa.String(length=20), nullable=False),
+    sa.Column('password', sa.String(length=255), nullable=False),
+    sa.Column('is_staff', sa.Boolean(), nullable=False),
+    sa.Column('is_superuser', sa.Boolean(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('username')
+    )
     op.create_table('program',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('title', sa.String(length=255), nullable=False),
@@ -36,6 +47,16 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['category_id'], ['category.id'], ),
     sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('token',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('token', sa.String(length=50), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text("TIMEZONE('utc', now())"), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['user.id'], ),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('token')
     )
     op.create_table('exercise',
     sa.Column('id', sa.Integer(), nullable=False),
@@ -85,6 +106,8 @@ def downgrade() -> None:
     op.drop_table('history_exercise')
     op.drop_table('telegram_user')
     op.drop_table('exercise')
+    op.drop_table('token')
     op.drop_table('program')
+    op.drop_table('user')
     op.drop_table('category')
     # ### end Alembic commands ###
