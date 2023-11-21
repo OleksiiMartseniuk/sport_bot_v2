@@ -26,9 +26,17 @@ def write_programs(patch: str):
 @cli.command()
 @click.argument("username", type=click.STRING, required=True)
 @click.argument("password", type=click.STRING, required=True)
-def create_staff(username: str, password: str):
-    asyncio.run(Commands.create_staff(username, password))
-    click.echo(f"User {username} created")
+def create_user_staff(username: str, password: str):
+    asyncio.run(Commands.create_user_staff(username, password))
+    click.echo(f"User {username} [staff] created")
+
+
+@cli.command()
+@click.argument("username", type=click.STRING, required=True)
+@click.argument("password", type=click.STRING, required=True)
+def create_superuser(username: str, password: str):
+    asyncio.run(Commands.create_superuser(username, password))
+    click.echo(f"User {username} [superuser] created")
 
 
 if __name__ == "__main__":
