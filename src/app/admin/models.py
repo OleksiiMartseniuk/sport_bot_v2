@@ -7,7 +7,7 @@ from src.database.models.history import HistoryExercise
 
 
 class TokeAdmin(ModelView, model=Token):
-    column_list = [Token.id, Token.user_id]
+    column_list = [Token.id, Token.user_id, Token.user]
 
 
 class UserAdmin(ModelView, model=User):
@@ -17,10 +17,17 @@ class UserAdmin(ModelView, model=User):
         User.is_staff,
         User.is_superuser,
     ]
+    form_excluded_columns = [User.password]
 
 
 class TelegramUserAdmin(ModelView, model=TelegramUser):
-    column_list = [TelegramUser.id, TelegramUser.telegram_id]
+    column_list = [
+        TelegramUser.id,
+        TelegramUser.username,
+        TelegramUser.telegram_id,
+        TelegramUser.program,
+        TelegramUser.created_at,
+    ]
 
 
 class ProgramAdmin(ModelView, model=Program):
@@ -31,8 +38,10 @@ class ExerciseAdmin(ModelView, model=Exercise):
     column_list = [
         Exercise.id,
         Exercise.title,
+        Exercise.day,
         Exercise.program,
     ]
+    column_sortable_list = [Exercise.day]
     column_searchable_list = [Exercise.program_id]
 
 
