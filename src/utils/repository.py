@@ -92,7 +92,7 @@ class SqlAlchemyRepository(AbstractRepository, Generic[SqlAlchemyModel]):
         if one:
             return False, one
         else:
-            stmt = insert(self.model).values(**filter).returning(self.model)
+            stmt = insert(self.model).values(**filters).returning(self.model)
             res = await self.session.execute(stmt)
             return True, res.scalar_one()
 
