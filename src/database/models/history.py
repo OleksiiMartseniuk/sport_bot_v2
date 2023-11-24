@@ -10,7 +10,7 @@ from src.database.mixins import TimestampMixin
 
 if TYPE_CHECKING:
     from .program import Exercise, Program
-    from .user import User
+    from .user import TelegramUser
 
 
 class HistoryExercise(TimestampMixin, Base):
@@ -18,7 +18,9 @@ class HistoryExercise(TimestampMixin, Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     exercise_id: Mapped[int] = mapped_column(ForeignKey("exercise.id"))
-    user_id: Mapped[int] = mapped_column(ForeignKey("user.id"))
+    telegram_user_id: Mapped[int] = mapped_column(
+        ForeignKey("telegram_user.id")
+    )
     program_id: Mapped[int] = mapped_column(ForeignKey("program.id"))
 
     approach: Mapped[int] = mapped_column(Integer)
@@ -30,6 +32,12 @@ class HistoryExercise(TimestampMixin, Base):
     program: Mapped["Program"] = relationship(
         back_populates="history_exercises",
     )
-    user: Mapped["User"] = relationship(
+    telegram_user: Mapped["TelegramUser"] = relationship(
         back_populates="history_exercises",
     )
+
+    def __repr__(self):
+        return (
+            f"HistoryExercise [{self.id}] exercise_id={self.exercise_id} "
+            f"user_id={self.telegram_user_id}, program_id={self.program_id}"
+        )

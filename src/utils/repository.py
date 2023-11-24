@@ -15,11 +15,23 @@ class AbstractRepository(ABC):
         ...
 
     @abstractmethod
+    async def get_or_none(self, **filters):
+        ...
+
+    @abstractmethod
+    async def get_or_create(self, **filters):
+        ...
+
+    @abstractmethod
     async def update(self, data: dict, **fields):
         ...
 
     @abstractmethod
     async def delete(self, id: int):
+        ...
+
+    @abstractmethod
+    async def exists(self, **filters):
         ...
 
     @abstractmethod
@@ -32,6 +44,10 @@ class AbstractRepository(ABC):
         **filters,
     ):
         pass
+
+    @abstractmethod
+    async def count(self, **filters):
+        ...
 
 
 SqlAlchemyModel = TypeVar("SqlAlchemyModel")
@@ -69,16 +85,21 @@ class SqlAlchemyRepository(AbstractRepository, Generic[SqlAlchemyModel]):
         res = await self.session.execute(stmt)
         return res.scalar_one()
 
-    async def get_or_create(self, **filter) -> tuple[bool, SqlAlchemyModel]:
-        stmt = select(self.model).filter_by(**filter)
+    async def get_or_create(self, **filters) -> tuple[bool, SqlAlchemyModel]:
+        stmt = select(self.model).filter_by(**filters)
         res = await self.session.execute(stmt)
         one = res.scalar_one_or_none()
         if one:
             return False, one
         else:
-            stmt = insert(self.model).values(**filter).returning(self.model)
+            stmt = insert(self.model).values(**filters).returning(self.model)
             res = await self.session.execute(stmt)
             return True, res.scalar_one()
+
+    async def get_or_none(self, **filters) -> SqlAlchemyModel | None:
+        stmt = select(self.model).filter_by(**filters)
+        res = await self.session.execute(stmt)
+        return res.scalar_one_or_none()
 
     async def exists(self, **filters) -> bool:
         exists_criteria = (

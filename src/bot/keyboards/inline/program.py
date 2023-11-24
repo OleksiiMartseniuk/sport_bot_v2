@@ -13,7 +13,6 @@ from src.utils.utils import WeekDict, Week
 from src.bot.callback.program import ProgramCallback, MenuLevels
 from src.database.models.program import Exercise
 from src.services.history import HistoryService
-from src.services.profile import ProfileService
 from src.settings import MENU_IMAGE_FILE_ID
 
 
@@ -55,7 +54,7 @@ class ProgramKeyboard:
                 telegram_id=telegram_id,
                 uow=uow,
             )
-            user = await uow.user.get(telegram_id=telegram_id)
+            user = await uow.telegram_user.get(telegram_id=telegram_id)
             programs = await uow.program.all(category_id=category_id)
             for program in programs:
                 builder.button(
@@ -103,17 +102,13 @@ class ProgramKeyboard:
         uow: SqlAlchemyUnitOfWork,
     ) -> None:
         if subscription != 0:
-            user = await uow.user.get(telegram_id=telegram_id)
+            user = await uow.telegram_user.get(telegram_id=telegram_id)
             if subscription == user.program_id:
-                await ProfileService.unsubscribe_to_program(
-                    uow=uow,
-                    id=user.id,
-                )
+                await uow.telegram_user.unsubscribe_to_program(id=user.id)
             else:
-                await ProfileService.subscribe_to_program(
+                await uow.telegram_user.subscribe_to_program(
                     program_id=subscription,
-                    uow=uow,
-                    id=user.id
+                    id=user.id,
                 )
 
     @staticmethod
@@ -228,10 +223,10 @@ class ProgramKeyboard:
             value=calculate_result,
         )
         async with uow:
-            user = await uow.user.get(telegram_id=telegram_id)
+            user = await uow.telegram_user.get(telegram_id=telegram_id)
             exercise = await uow.exercise.get(id=callback.exercise)
             history_count = await uow.history_exercise.get_count_history_today(
-                user_id=user.id,
+                telegram_user_id=user.id,
                 program_id=callback.program,
                 exercise_id=callback.exercise,
             )
@@ -239,7 +234,7 @@ class ProgramKeyboard:
                 await HistoryService.create_history_exercise(
                     uow=uow,
                     exercise_id=callback.exercise,
-                    user_id=user.id,
+                    telegram_user_id=user.id,
                     program_id=callback.program,
                     approach=history_count + 1,
                     number_of_repetitions=callback.value,
@@ -247,7 +242,7 @@ class ProgramKeyboard:
                 callback_data.value, calculate_result = 0, 0
                 history_count = (
                     await uow.history_exercise.get_count_history_today(
-                        user_id=user.id,
+                        telegram_user_id=user.id,
                         program_id=callback.program,
                         exercise_id=callback.exercise,
                     )
