@@ -1,5 +1,10 @@
-from sqladmin import ModelView
+import os
+from typing import Any
 
+from sqladmin import ModelView
+from starlette.requests import Request
+
+from src.utils.utils import download_image
 from src.database.models.user import TelegramUser, User
 from src.database.models.token import Token
 from src.database.models.program import Program, Exercise
@@ -43,6 +48,26 @@ class ExerciseAdmin(ModelView, model=Exercise):
     ]
     column_sortable_list = [Exercise.day]
     column_searchable_list = [Exercise.program_id]
+
+    async def insert_model(self, request: Request, data: dict) -> Any:
+        data["image"] = await download_image(url=data["image"])
+        return await super().insert_model(request, data)
+
+    async def update_model(self, request: Request, pk: str, data: dict) -> Any:
+        exercise = await request.state.uow.exercise.get(id=int(pk))
+        if exercise.image != data["image"]:
+            data["image"] = await download_image(url=data["image"])
+            if exercise.image is not None:
+                if os.path.isfile(exercise.image):
+                    os.remove(exercise.image)
+        return await super().update_model(request, pk, data)
+
+    async def delete_model(self, request: Request, pk: Any) -> None:
+        exercise = await request.state.uow.exercise.get(id=int(pk))
+        if exercise.image is not None:
+            if os.path.isfile(exercise.image):
+                os.remove(exercise.image)
+        await super().delete_model(request, pk)
 
 
 class HistoryExerciseAdmin(ModelView, model=HistoryExercise):
