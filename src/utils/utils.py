@@ -1,4 +1,14 @@
 import enum
+import uuid
+import logging
+
+import httpx
+import aiofiles
+
+from src.settings import IMAGES_DIR
+
+
+logger = logging.getLogger(__name__)
 
 
 class Week(enum.Enum):
@@ -20,3 +30,20 @@ WeekDict = {
     5: "Суббота",
     6: "Воскресение",
 }
+
+
+async def download_image(url: str) -> str | None:
+    name_file = IMAGES_DIR / f'image_{uuid.uuid4()}.png'
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.get(url)
+        except Exception as ex:
+            logger.error(f"Error download image {url}", exc_info=ex)
+            return None
+        if response.is_success:
+            async with aiofiles.open(name_file, mode="wb") as file:
+                await file.write(response.read())
+                return name_file.__str__()
+        else:
+            logger.error(f"No image loaded [{url}]")
+            return None
