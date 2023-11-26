@@ -1,13 +1,9 @@
 import csv
 import logging
-import uuid
 
-import httpx
-import aiofiles
-
+from src.utils.utils import download_image
 from src.utils.unitofwork import SqlAlchemyUnitOfWork
 from src.schemas.import_data import File
-from src.settings import IMAGES_DIR
 
 
 class ImportDataService:
@@ -48,7 +44,7 @@ class ImportDataService:
                         **obj.get_fields_exercise(),
                     )
                     if exercise.image is None:
-                        image_path = await self.__download_image(
+                        image_path = await download_image(
                             url=obj.exercise_image_url,
                         )
                         if image_path:
@@ -59,15 +55,3 @@ class ImportDataService:
                     await self.uow.commit()
             except Exception as ex:
                 self.logger.error(f"Error import line[{idx}]", exc_info=ex)
-
-    async def __download_image(self, url: str) -> str | None:
-        name_file = IMAGES_DIR / f'image_{uuid.uuid4()}.png'
-        async with httpx.AsyncClient() as client:
-            response = await client.get(url)
-            if response.is_success:
-                async with aiofiles.open(name_file, mode="wb") as file:
-                    await file.write(response.read())
-                    return name_file.__str__()
-            else:
-                self.logger.error(f"No image loaded [{url}]")
-        return None

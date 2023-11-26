@@ -14,12 +14,14 @@ def cli():
 
 @cli.command()
 def run_bot():
+    """Run application"""
     asyncio.run(bot())
 
 
 @cli.command()
 @click.argument("patch", type=click.Path(exists=True), required=True)
 def write_programs(patch: str):
+    """Writing data from a file"""
     asyncio.run(ImportDataService().import_file(path=(BASE_DIR / patch)))
 
 
@@ -27,6 +29,7 @@ def write_programs(patch: str):
 @click.argument("username", type=click.STRING, required=True)
 @click.argument("password", type=click.STRING, required=True)
 def create_user_staff(username: str, password: str):
+    """Create user with permission staff"""
     asyncio.run(Commands.create_user_staff(username, password))
     click.echo(f"User {username} [staff] created")
 
@@ -35,6 +38,7 @@ def create_user_staff(username: str, password: str):
 @click.argument("username", type=click.STRING, required=True)
 @click.argument("password", type=click.STRING, required=True)
 def create_superuser(username: str, password: str):
+    """Create user with permission superuser"""
     asyncio.run(Commands.create_superuser(username, password))
     click.echo(f"User {username} [superuser] created")
 
