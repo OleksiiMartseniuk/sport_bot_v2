@@ -9,6 +9,19 @@ from src.database.models.user import TelegramUser, User
 from src.database.models.token import Token
 from src.database.models.program import Program, Exercise
 from src.database.models.history import HistoryExercise
+from src.database.models.logger import StatusLog
+
+
+class StatusLogAdmin(ModelView, model=StatusLog):
+    column_list = [
+        StatusLog.id,
+        StatusLog.logger_name,
+        StatusLog.level,
+        StatusLog.msg,
+        StatusLog.created_at,
+    ]
+    column_sortable_list = [StatusLog.level]
+    column_default_sort = ("created_at", True)
 
 
 class TokeAdmin(ModelView, model=Token):
@@ -82,6 +95,7 @@ class HistoryExerciseAdmin(ModelView, model=HistoryExercise):
 
 admin_view_models = [
     TokeAdmin,
+    StatusLogAdmin,
     UserAdmin,
     TelegramUserAdmin,
     ProgramAdmin,
