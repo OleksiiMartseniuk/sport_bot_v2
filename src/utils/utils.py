@@ -21,6 +21,17 @@ class Week(enum.Enum):
     SUNDAY = 6
 
 
+class LogLevel(enum.Enum):
+    CRITICAL = logging.CRITICAL
+    FATAL = logging.CRITICAL
+    ERROR = logging.ERROR
+    WARNING = logging.WARNING
+    WARN = logging.WARNING
+    INFO = logging.INFO
+    DEBUG = logging.DEBUG
+    NOTSET = logging.NOTSET
+
+
 WeekDict = {
     0: "Понедельник",
     1: "Вторник",
