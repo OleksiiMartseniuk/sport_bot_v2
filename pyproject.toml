@@ -2,8 +2,7 @@
 name = "sport-bot-v2"
 version = "0.1.0"
 description = ""
-authors = ["Olekseii Martseniuk <martsenyk.oleksii@ezcloudllc.com>"]
-readme = "README.md"
+authors = ["Olekseii Martseniuk"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
