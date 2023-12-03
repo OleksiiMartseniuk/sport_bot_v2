@@ -8,7 +8,7 @@ import aiofiles
 from src.settings import IMAGES_DIR
 
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("db")
 
 
 class Week(enum.Enum):
@@ -19,6 +19,17 @@ class Week(enum.Enum):
     FRIDAY = 4
     SATURDAY = 5
     SUNDAY = 6
+
+
+class LogLevel(enum.Enum):
+    CRITICAL = logging.CRITICAL
+    FATAL = logging.CRITICAL
+    ERROR = logging.ERROR
+    WARNING = logging.WARNING
+    WARN = logging.WARNING
+    INFO = logging.INFO
+    DEBUG = logging.DEBUG
+    NOTSET = logging.NOTSET
 
 
 WeekDict = {
@@ -38,12 +49,12 @@ async def download_image(url: str) -> str | None:
         try:
             response = await client.get(url)
         except Exception as ex:
-            logger.error(f"Error download image {url}", exc_info=ex)
+            logger.error(f"Error download image {url=}", exc_info=ex)
             return None
         if response.is_success:
             async with aiofiles.open(name_file, mode="wb") as file:
                 await file.write(response.read())
                 return name_file.__str__()
         else:
-            logger.error(f"No image loaded [{url}]")
+            logger.error(f"No image loaded {response.status_code=} [{url=}]")
             return None

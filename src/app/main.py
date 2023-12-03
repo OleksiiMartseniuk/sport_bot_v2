@@ -7,7 +7,7 @@ from starlette.responses import RedirectResponse
 from starlette.routing import Route
 from starlette.requests import Request
 
-from src.database.base import engine
+from src.database.base import engine_async
 from src.app.admin.models import admin_view_models
 from src.app.admin.auth import authentication_backend
 from src.utils.unitofwork import SqlAlchemyUnitOfWork
@@ -35,7 +35,7 @@ routes = [
 app = Starlette(lifespan=lifespan, routes=routes)
 admin = Admin(
     app=app,
-    engine=engine,
+    engine=engine_async,
     authentication_backend=authentication_backend,
 )
 

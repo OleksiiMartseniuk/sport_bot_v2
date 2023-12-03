@@ -2,8 +2,7 @@
 name = "sport-bot-v2"
 version = "0.1.0"
 description = ""
-authors = ["Olekseii Martseniuk <martsenyk.oleksii@ezcloudllc.com>"]
-readme = "README.md"
+authors = ["Olekseii Martseniuk"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
@@ -20,6 +19,7 @@ sqladmin = "^0.16.0"
 uvicorn = "^0.24.0.post1"
 itsdangerous = "^2.1.2"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+psycopg2 = "^2.9.9"
 
 
 [build-system]
