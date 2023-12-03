@@ -56,5 +56,5 @@ async def download_image(url: str) -> str | None:
                 await file.write(response.read())
                 return name_file.__str__()
         else:
-            logger.error(f"No image loaded [{url}]")
+            logger.error(f"No image loaded {response.status_code=} [{url=}]")
             return None
