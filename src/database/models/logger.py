@@ -2,7 +2,7 @@ from typing import Optional
 from datetime import datetime
 
 from sqlalchemy import text
-from sqlalchemy import String, Enum
+from sqlalchemy import String, Enum, Text
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 
@@ -17,7 +17,7 @@ class StatusLog(Base):
     logger_name: Mapped[str] = mapped_column(String(255))
     level: Mapped[Enum] = mapped_column(Enum(LogLevel))
     msg: Mapped[str] = mapped_column(String)
-    trace: Mapped[Optional[str]] = mapped_column(String)
+    trace: Mapped[Optional[str]] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(
         server_default=text("TIMEZONE('utc', now())"),
     )
