@@ -1,5 +1,7 @@
+from fastapi.requests import Request
+
 from sqladmin.authentication import AuthenticationBackend
-from starlette.requests import Request
+
 from src.services.hash import Hasher
 from src.settings import SECRET_KEY
 

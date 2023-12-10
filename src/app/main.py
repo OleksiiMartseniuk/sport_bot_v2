@@ -3,7 +3,7 @@ from typing import AsyncIterator, TypedDict
 
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
-from starlette.applications import Starlette
+
 from sqladmin import Admin
 
 from src.database.base import engine_async
@@ -17,16 +17,13 @@ class State(TypedDict):
 
 
 @contextlib.asynccontextmanager
-async def lifespan(app: Starlette) -> AsyncIterator[State]:
+async def lifespan(app: FastAPI) -> AsyncIterator[State]:
     uow = SqlAlchemyUnitOfWork()
     async with uow:
-        yield {"uow": uow}
+        yield State(uow=uow)
 
 
 app = FastAPI(lifespan=lifespan)
-app.uow = SqlAlchemyUnitOfWork()
-
-
 admin = Admin(
     app=app,
     engine=engine_async,
