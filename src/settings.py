@@ -33,6 +33,9 @@ MENU_IMAGE_FILE_ID = os.getenv("MENU_IMAGE_FILE_ID")
 # Authentication Backend Admin
 SECRET_KEY = os.getenv("SECRET_KEY")
 
+LOG_DIR = BASE_DIR / "logs"
+os.makedirs(LOG_DIR, exist_ok=True)
+
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -50,11 +53,16 @@ LOGGING_CONFIG = {
         "db_handler": {
             "class": "src.db_logger.db_log_handler.DatabaseLogHandler",
             "level": "INFO",
-        }
+        },
+        "project_file": {
+            "class": "logging.FileHandler",
+            "filename": LOG_DIR / "general.log",
+            "formatter": "default",
+        },
     },
     "loggers": {
         "": {
-            "handlers": ["stdout"],
+            "handlers": ["stdout", "project_file"],
             "level": "INFO",
             "propagate": True
         },
