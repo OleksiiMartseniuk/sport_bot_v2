@@ -1,11 +1,10 @@
 import contextlib
 from typing import AsyncIterator, TypedDict
 
+from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
+
 from sqladmin import Admin
-from starlette.applications import Starlette
-from starlette.responses import RedirectResponse
-from starlette.routing import Route
-from starlette.requests import Request
 
 from src.database.base import engine_async
 from src.app.admin.models import admin_view_models
@@ -17,27 +16,24 @@ class State(TypedDict):
     uow: SqlAlchemyUnitOfWork
 
 
-async def redirect_admin(request: Request):
-    return RedirectResponse(url="/admin")
-
-
 @contextlib.asynccontextmanager
-async def lifespan(app: Starlette) -> AsyncIterator[State]:
+async def lifespan(app: FastAPI) -> AsyncIterator[State]:
     uow = SqlAlchemyUnitOfWork()
     async with uow:
-        yield {"uow": uow}
+        yield State(uow=uow)
 
 
-routes = [
-    Route("/", endpoint=redirect_admin),
-]
-
-app = Starlette(lifespan=lifespan, routes=routes)
+app = FastAPI(lifespan=lifespan)
 admin = Admin(
     app=app,
     engine=engine_async,
     authentication_backend=authentication_backend,
 )
+
+
+@app.get("/")
+async def redirect_admin():
+    return RedirectResponse(url="/admin")
 
 
 for admin_view in admin_view_models:
