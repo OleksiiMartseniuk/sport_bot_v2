@@ -17,7 +17,7 @@ def cli():
 def run_bot():
     """Run application"""
     logging.config.dictConfig(LOGGING_CONFIG)
-    asyncio.run(bot())
+    bot()
 
 
 @cli.command()

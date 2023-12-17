@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
+DEBUG = bool(int(os.getenv("DEBUG")))
+CORS_ORIGINS = os.getenv("CORS_ORIGINS").split(", ")
 # Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 IMAGES_DIR = BASE_DIR / "media/images"
@@ -29,6 +32,11 @@ DATABASE_URL_ASYNC = (
 # Telegram
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 MENU_IMAGE_FILE_ID = os.getenv("MENU_IMAGE_FILE_ID")
+WEB_SERVER_HOST = os.getenv("WEB_SERVER_HOST")
+WEB_SERVER_PORT = int(os.getenv("WEB_SERVER_PORT"))
+BASE_WEBHOOK_URL = os.getenv("BASE_WEBHOOK_URL")
+WEBHOOK_PATH_SECURITY = os.getenv("WEBHOOK_PATH_SECURITY")
+WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET")
 
 # Authentication Backend Admin
 SECRET_KEY = os.getenv("SECRET_KEY")
