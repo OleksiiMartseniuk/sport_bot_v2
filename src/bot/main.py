@@ -14,13 +14,14 @@ from src.settings import (
     BOT_TOKEN,
     BASE_WEBHOOK_URL,
     WEBHOOK_SECRET,
+    WEBHOOK_PATH_SECURITY,
     DEBUG,
     WEB_SERVER_PORT,
     WEB_SERVER_HOST,
 )
 
 
-WEBHOOK_PATH = f"/webhook/{BOT_TOKEN}"
+WEBHOOK_PATH = f"/webhook/{WEBHOOK_PATH_SECURITY}"
 WEBHOOK_URL = f"{BASE_WEBHOOK_URL}{WEBHOOK_PATH}"
 
 
@@ -55,10 +56,9 @@ def main() -> None:
     if DEBUG:
         asyncio.run(run_debug(bot, dp))
     else:
-        asyncio.run(set_commands(bot))
-
         @app.on_event("startup")
         async def on_startup():
+            await set_commands(bot)
             webhook_info = await bot.get_webhook_info()
             if webhook_info.url != WEBHOOK_URL:
                 await bot.set_webhook(
@@ -71,7 +71,7 @@ def main() -> None:
             await bot.session.close()
 
         @app.post(WEBHOOK_PATH)
-        async def bot_webhook(update: dict, **kwargs):
+        async def bot_webhook(update: dict):
             await dp.feed_webhook_update(bot=bot, update=Update(**update))
 
         uvicorn.run(
