@@ -1,5 +1,5 @@
-import uvicorn
 import asyncio
+import logging.config
 
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
@@ -16,8 +16,7 @@ from src.settings import (
     WEBHOOK_SECRET,
     WEBHOOK_PATH_SECURITY,
     DEBUG,
-    WEB_SERVER_PORT,
-    WEB_SERVER_HOST,
+    LOGGING_CONFIG,
 )
 
 
@@ -52,6 +51,7 @@ async def run_debug(bot: Bot, dp: Dispatcher):
 
 
 def main() -> None:
+    logging.config.dictConfig(LOGGING_CONFIG)
     bot, dp = setup_bot()
     if DEBUG:
         asyncio.run(run_debug(bot, dp))
@@ -74,8 +74,6 @@ def main() -> None:
         async def bot_webhook(update: dict):
             await dp.feed_webhook_update(bot=bot, update=Update(**update))
 
-        uvicorn.run(
-            app=app,
-            host=WEB_SERVER_HOST,
-            port=WEB_SERVER_PORT
-        )
+
+if __name__ == "__main__":
+    main()

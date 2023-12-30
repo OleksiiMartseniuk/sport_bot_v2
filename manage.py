@@ -2,7 +2,6 @@ import logging.config
 import asyncio
 import click
 
-from src.bot.main import main as bot
 from src.services.import_data import ImportDataService
 from src.services.commands import Commands
 from src.settings import BASE_DIR, LOGGING_CONFIG
@@ -10,14 +9,7 @@ from src.settings import BASE_DIR, LOGGING_CONFIG
 
 @click.group()
 def cli():
-    pass
-
-
-@cli.command()
-def run_bot():
-    """Run application"""
     logging.config.dictConfig(LOGGING_CONFIG)
-    bot()
 
 
 @cli.command()

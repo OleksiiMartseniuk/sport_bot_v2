@@ -21,6 +21,7 @@ itsdangerous = "^2.1.2"
 passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 psycopg2 = "^2.9.9"
 fastapi = "0.102.0"
+gunicorn = "^21.2.0"
 
 
 [build-system]
