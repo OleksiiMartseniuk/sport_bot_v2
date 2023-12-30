@@ -10,13 +10,12 @@ from src.settings import BASE_DIR, LOGGING_CONFIG
 
 @click.group()
 def cli():
-    pass
+    logging.config.dictConfig(LOGGING_CONFIG)
 
 
 @cli.command()
 def run_bot():
     """Run application"""
-    logging.config.dictConfig(LOGGING_CONFIG)
     bot()
 
 
