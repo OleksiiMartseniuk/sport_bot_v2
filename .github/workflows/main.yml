@@ -1,0 +1,38 @@
+name: CI/CD Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up SSH keys
+      uses: webfactory/ssh-agent@v0.4.1
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Deploy to remote server
+      run: |
+        ssh user@remote-server 'cd /opt/sport_bot_v2/ &&
+        source /opt/backend/venv/bin/ac tivate &&
+        git fetch &&
+        git checkout $CI_COMMIT_BRANCH &&
+        git pull origin $CI_COMMIT_BRANCH &&
+        pip install -r requirements.txt &&
+        supervisorctl stop all &&
+        alembic upgrade head &&
+        cp config/etc/nginx/sites-available/* /etc/nginx/sites-available/. &&
+        ln -sf /etc/nginx/sites-available/backend.conf /etc/nginx/sites-enabled/ &&
+        cp config/etc/supervisor/conf.d/* /etc/supervisor/conf.d/. &&
+        supervisorctl reread &&
+        supervisorctl update &&
+        supervisorctl start all &&
+        service nginx restart"
+        '
