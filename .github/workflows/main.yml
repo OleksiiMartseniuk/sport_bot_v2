@@ -28,4 +28,13 @@ jobs:
         git fetch &&
         git checkout ${{ vars.CI_COMMIT_BRANCH }} &&
         git pull origin ${{ vars.CI_COMMIT_BRANCH }} &&
-        pip install -r requirements.txt'
+        pip install -r requirements.txt &&
+        sudo supervisorctl stop all &&
+        alembic upgrade head &&
+        sudo cp etc/nginx/sites-available/* /etc/nginx/sites-available/. &&
+        sudo ln -sf /etc/nginx/sites-available/backend.conf /etc/nginx/sites-enabled/ &&
+        sudo cp etc/supervisor/conf.d/* /etc/supervisor/conf.d/. &&
+        sudo supervisorctl reread &&
+        sudo supervisorctl update &&
+        sudo supervisorctl start all &&
+        sudo service nginx restart'
