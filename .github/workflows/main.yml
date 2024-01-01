@@ -26,15 +26,15 @@ jobs:
         export SERVER_NAME=${{ vars.AWS }} &&
         source /opt/sport_bot_v2/venv/bin/activate &&
         git fetch &&
-        git checkout main &&
-        git pull origin main &&
+        git checkout ${{ vars.CI_COMMIT_BRANCH }} &&
+        git pull origin ${{ vars.CI_COMMIT_BRANCH }} &&
         pip install -r requirements.txt &&
         supervisorctl stop all &&
-        alembic upgrade head &&
+#        alembic upgrade head &&
         cp config/etc/nginx/sites-available/* /etc/nginx/sites-available/. &&
         ln -sf /etc/nginx/sites-available/backend.conf /etc/nginx/sites-enabled/ &&
-        cp config/etc/supervisor/conf.d/* /etc/supervisor/conf.d/. &&
-        supervisorctl reread &&
-        supervisorctl update &&
-        supervisorctl start all &&
-        service nginx restart'
+        cp config/etc/supervisor/conf.d/* /etc/supervisor/conf.d/.'
+#        supervisorctl reread &&
+#        supervisorctl update &&
+#        supervisorctl start all &&
+#        service nginx restart'
