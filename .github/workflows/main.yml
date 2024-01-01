@@ -33,9 +33,5 @@ jobs:
         alembic upgrade head &&
         cp config/etc/nginx/sites-available/* /etc/nginx/sites-available/. &&
         ln -sf /etc/nginx/sites-available/backend.conf /etc/nginx/sites-enabled/ &&
-        cp config/etc/supervisor/conf.d/* /etc/supervisor/conf.d/. &&
-        supervisorctl reread &&
-        supervisorctl update &&
-        supervisorctl start all &&
-        service nginx restart"
+        cp config/etc/supervisor/conf.d/* /etc/supervisor/conf.d/.
         '
