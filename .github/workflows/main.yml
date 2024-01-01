@@ -13,7 +13,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Use SSH key
+    - name: Install SSH key
       run: |
         mkdir -p ~/.ssh/
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/aws-key.pem
@@ -26,8 +26,8 @@ jobs:
         export SERVER_NAME=${{ vars.AWS }} &&
         source /opt/backend/venv/bin/activate &&
         git fetch &&
-        git checkout $CI_COMMIT_BRANCH &&
-        git pull origin $CI_COMMIT_BRANCH &&
+        git checkout main &&
+        git pull origin main &&
         pip install -r requirements.txt &&
         supervisorctl stop all &&
         alembic upgrade head &&
