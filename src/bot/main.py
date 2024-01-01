@@ -73,7 +73,3 @@ def main() -> None:
         @app.post(WEBHOOK_PATH)
         async def bot_webhook(update: dict):
             await dp.feed_webhook_update(bot=bot, update=Update(**update))
-
-
-if __name__ == "__main__":
-    main()
