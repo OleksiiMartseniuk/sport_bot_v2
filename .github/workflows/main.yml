@@ -13,14 +13,16 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Set up SSH keys
-      uses: webfactory/ssh-agent@v0.4.1
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+    - name: Use SSH key
+      run: |
+        mkdir -p ~/.ssh/
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/aws-key.pem
+        chmod 600 ~/.ssh/aws-key.pem
+        ssh-keyscan -t rsa ${{vars.AWS}} >> ~/.ssh/known_hosts
 
     - name: Deploy to remote server
       run: |
-        ssh ubuntu@${{ vars.AWS }} 'cd /opt/sport_bot_v2/ &&
+        ssh -i ~/.ssh/aws-key.pem ubuntu@${{ vars.AWS }} 'cd /opt/sport_bot_v2/ &&
         export SERVER_NAME=${{ vars.AWS }} &&
         source /opt/backend/venv/bin/activate &&
         git fetch &&
