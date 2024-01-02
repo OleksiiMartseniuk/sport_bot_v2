@@ -15,7 +15,7 @@ def cli():
 
 @cli.command()
 def run_bot():
-    bot()
+    return bot()
 
 
 @cli.command()

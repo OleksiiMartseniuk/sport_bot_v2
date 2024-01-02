@@ -5,6 +5,8 @@ from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.types import Update
 
+from fastapi import FastAPI
+
 from src.app.main import app
 from src.bot.commands import set_commands
 from src.bot.handlers.program import program_router
@@ -50,7 +52,7 @@ async def run_debug(bot: Bot, dp: Dispatcher):
     await dp.start_polling(bot)
 
 
-def main() -> None:
+def main() -> FastAPI | None:
     logging.config.dictConfig(LOGGING_CONFIG)
     bot, dp = setup_bot()
     if DEBUG:
@@ -74,3 +76,4 @@ def main() -> None:
         async def bot_webhook(update: dict):
             await dp.feed_webhook_update(bot=bot, update=Update(**update))
 
+        return app
