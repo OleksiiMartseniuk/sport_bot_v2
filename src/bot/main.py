@@ -5,8 +5,6 @@ from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.types import Update
 
-from fastapi import FastAPI
-
 from src.app.main import app
 from src.bot.commands import set_commands
 from src.bot.handlers.program import program_router
@@ -76,6 +74,3 @@ def main() -> None:
         async def bot_webhook(update: dict):
             await dp.feed_webhook_update(bot=bot, update=Update(**update))
 
-
-if __name__ == "main":
-    main()
