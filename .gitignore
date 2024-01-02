@@ -1,6 +1,7 @@
 .idea
 .vscode
 .env
+.env.production
 __pycache__
 media/images/*
 tmp
