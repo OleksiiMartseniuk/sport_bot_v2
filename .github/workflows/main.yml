@@ -30,7 +30,7 @@ jobs:
         git pull origin ${{ vars.CI_COMMIT_BRANCH }} &&
         pip install -r requirements.txt &&
         sudo supervisorctl stop all &&
-        sudo python scripts/backup.py &&
+        python scripts/backup.py &&
         alembic upgrade head &&
         sudo cp etc/nginx/sites-available/* /etc/nginx/sites-available/. &&
         sudo ln -sf /etc/nginx/sites-available/backend.conf /etc/nginx/sites-enabled/ &&
