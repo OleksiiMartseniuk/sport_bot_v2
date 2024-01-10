@@ -11,15 +11,73 @@
 
 ## About
 
-Telegram bot v2 for choosing training programs, monitoring the implementation of exercises and keeping statistics.
+SportBot v2 for choosing training programs, monitoring the implementation of exercises and keeping statistics.
 
 ## Documentation
 
-Documentation Here
+### Features
+
+* Mark the program as completed
+* Navigation menu
+* Collection of statistics
+* Auth user
+* Admin panel
+
+### Commands
+
+`manage.py run-bot` Run bot <br>
+`manage.py write-programs <path file>` Write data from a file `.csv` <br>
+`manage.py create-user-staff-bot <username> <password>` Create a user with the staff role <br>
+`manage.py create-superuser <username> <password>` Create a user with the superuser role <br>
+
+### Installation
+
+1. Create file `.env`
+
+```
+# Base
+DEBUG=[bool]
+CORS_ORIGINS=
+
+# Data base
+POSTGRES_DB=
+POSTGRES_USER=
+POSTGRES_PASSWORD=
+POSTGRES_HOST=
+POSTGRES_PORT=
+BACKUP_PATH=
+
+# Telegram
+BOT_TOKEN=
+WEBHOOK_SECRET=
+BASE_WEBHOOK_URL=
+WEBHOOK_PATH_SECURITY=
+
+# Authentication Backend Admin
+SECRET_KEY=
+```
+
+2. Creation of virtual environments and install requirements
+
+```bash
+poetry install
+```
+
+3. Run
+
+Run bot
+```bash
+python3 manage.py run-bot
+```
+
+Run admin
+```bash
+uvicorn src.wsgi:app --reload
+```
 
 ## Distribute
 
-- [Service Name](Page Link)
+- In progress
 
 
 ## Developers
