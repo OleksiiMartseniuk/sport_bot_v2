@@ -70,7 +70,7 @@ Run bot
 python3 manage.py run-bot
 ```
 
-Run admin
+Run admin panel
 ```bash
 uvicorn src.wsgi:app --reload
 ```
