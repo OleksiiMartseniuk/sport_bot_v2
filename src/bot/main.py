@@ -45,7 +45,7 @@ def setup_bot() -> tuple[Bot, Dispatcher]:
 
 
 async def run_debug(bot: Bot, dp: Dispatcher):
-    await set_commands(bot=bot)
+    # await set_commands(bot=bot)
     webhook_info = await bot.get_webhook_info()
     if webhook_info.url:
         await bot.delete_webhook()
@@ -60,7 +60,7 @@ def main() -> FastAPI | None:
     else:
         @app.on_event("startup")
         async def on_startup():
-            await set_commands(bot)
+            # await set_commands(bot)
             webhook_info = await bot.get_webhook_info()
             if webhook_info.url != WEBHOOK_URL:
                 await bot.set_webhook(
