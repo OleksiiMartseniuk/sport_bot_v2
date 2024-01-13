@@ -15,23 +15,23 @@ app = FastAPI()
 admin = Admin(
     app=app,
     engine=engine_async,
-    # authentication_backend=authentication_backend,
+    authentication_backend=authentication_backend,
 )
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=CORS_ORIGINS,
-#     allow_credentials=True,
-#     allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
-#     allow_headers=[
-#         "Content-Type",
-#         "Set-Cookie",
-#         "Access-Control-Allow-Headers",
-#         "Access-Control-Allow-Origin",
-#         "Authorization",
-#         "X-Forwarded-For",
-#     ],
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=CORS_ORIGINS,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "OPTIONS", "DELETE", "PATCH", "PUT"],
+    allow_headers=[
+        "Content-Type",
+        "Set-Cookie",
+        "Access-Control-Allow-Headers",
+        "Access-Control-Allow-Origin",
+        "Authorization",
+        "X-Forwarded-For",
+    ],
+)
 
 
 @app.get("/")
