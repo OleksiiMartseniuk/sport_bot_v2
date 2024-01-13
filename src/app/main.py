@@ -15,7 +15,7 @@ app = FastAPI()
 admin = Admin(
     app=app,
     engine=engine_async,
-    authentication_backend=authentication_backend,
+    # authentication_backend=authentication_backend,
 )
 
 # app.add_middleware(
