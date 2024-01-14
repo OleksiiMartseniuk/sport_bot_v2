@@ -59,8 +59,8 @@ class SqlAlchemyRepository(AbstractRepository, Generic[SqlAlchemyModel]):
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def create(self, data: dict) -> int:
-        stmt = insert(self.model).values(**data).returning(self.model.id)
+    async def create(self, data: dict) -> SqlAlchemyModel:
+        stmt = insert(self.model).values(**data).returning(self.model)
         res = await self.session.execute(stmt)
         return res.scalar_one()
 
@@ -92,9 +92,8 @@ class SqlAlchemyRepository(AbstractRepository, Generic[SqlAlchemyModel]):
         if one:
             return False, one
         else:
-            stmt = insert(self.model).values(**filters).returning(self.model)
-            res = await self.session.execute(stmt)
-            return True, res.scalar_one()
+            one = await self.create(data=filters)
+            return True, one
 
     async def get_or_none(self, **filters) -> SqlAlchemyModel | None:
         stmt = select(self.model).filter_by(**filters)
