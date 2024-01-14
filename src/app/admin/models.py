@@ -95,7 +95,10 @@ class HistoryExerciseAdmin(ModelView, model=HistoryExercise):
 
 
 class ProjectSettingsAdmin(ModelView, model=ProjectSettings):
-    column_list = ["menu_image_telegram_id"]
+    column_list = [
+        "id",
+        "menu_image_telegram_id",
+    ]
 
 
 admin_view_models = [
