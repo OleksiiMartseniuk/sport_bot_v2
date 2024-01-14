@@ -11,7 +11,9 @@ class ProjectSettings(Base):
     __tablename__ = "project_settings"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    menu_image_path: Mapped[str] = mapped_column(default=IMAGE_MENU_PATH)
+    menu_image_path: Mapped[str] = mapped_column(
+        default=IMAGE_MENU_PATH.as_posix(),
+    )
     menu_image_telegram_id: Mapped[Optional[str]] = mapped_column()
 
     def __repr__(self):
