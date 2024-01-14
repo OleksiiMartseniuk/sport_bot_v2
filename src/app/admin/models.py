@@ -10,6 +10,7 @@ from src.database.models.token import Token
 from src.database.models.program import Program, Exercise
 from src.database.models.history import HistoryExercise
 from src.database.models.logger import StatusLog
+from src.database.models.project_settings import ProjectSettings
 
 
 class StatusLogAdmin(ModelView, model=StatusLog):
@@ -93,6 +94,10 @@ class HistoryExerciseAdmin(ModelView, model=HistoryExercise):
     column_default_sort = ("created_at", True)
 
 
+class ProjectSettingsAdmin(ModelView, model=ProjectSettings):
+    column_list = ["menu_image_telegram_id"]
+
+
 admin_view_models = [
     TokeAdmin,
     StatusLogAdmin,
@@ -101,4 +106,5 @@ admin_view_models = [
     ProgramAdmin,
     ExerciseAdmin,
     HistoryExerciseAdmin,
+    ProjectSettingsAdmin,
 ]

@@ -4,3 +4,4 @@ from .models.program import Category, Program, Exercise
 from .models.history import HistoryExercise
 from .models.token import Token
 from .models.logger import StatusLog
+from .models.project_settings import ProjectSettings
