@@ -13,14 +13,13 @@ from src.utils.utils import WeekDict, Week
 from src.bot.callback.program import ProgramCallback, MenuLevels
 from src.database.models.program import Exercise
 from src.services.history import HistoryService
-from src.settings import MENU_IMAGE_FILE_ID
 
 
 class ProgramKeyboard:
     @staticmethod
     async def get_categories(
         uow: SqlAlchemyUnitOfWork,
-    ) -> InlineKeyboardMarkup:
+    ) -> tuple[InlineKeyboardMarkup, str | FSInputFile]:
         async with uow:
             categories = await uow.category.all()
             builder = InlineKeyboardBuilder()
@@ -36,7 +35,16 @@ class ProgramKeyboard:
                     ),
                 )
             builder.adjust(1)
-        return builder.as_markup()
+            is_create, project_settings = (
+                await uow.project_settings.get_or_create()
+            )
+            if is_create:
+                await uow.commit()
+            if project_settings.menu_image_telegram_id:
+                photo = project_settings.menu_image_telegram_id
+            else:
+                photo = FSInputFile(path=project_settings.menu_image_path)
+        return builder.as_markup(), photo
 
     async def get_program(
         self,
@@ -196,8 +204,7 @@ class ProgramKeyboard:
             )
             builder.adjust(1)
             builder.attach(InlineKeyboardBuilder.from_markup(button_back))
-            media = InputMediaPhoto(
-                media=MENU_IMAGE_FILE_ID,
+            media = await uow.project_settings.get_image_telegram(
                 caption=WeekDict[day],
             )
             return builder.as_markup(), media
@@ -314,7 +321,11 @@ class ProgramKeyboard:
                 )
             )
             builder.attach(InlineKeyboardBuilder.from_markup(button_back))
-            media, created_image = self.get_media(exercise=exercise, text=text)
+            media, created_image = await self.get_media(
+                exercise=exercise,
+                text=text,
+                uow=uow,
+            )
         return builder.as_markup(), media, created_image
 
     @staticmethod
@@ -342,9 +353,10 @@ class ProgramKeyboard:
         return text
 
     @staticmethod
-    def get_media(
+    async def get_media(
         exercise: Exercise,
         text: str,
+        uow: SqlAlchemyUnitOfWork,
     ) -> tuple[InputMediaPhoto, bool]:
         if exercise.telegram_image_id:
             media = InputMediaPhoto(
@@ -359,10 +371,7 @@ class ProgramKeyboard:
             )
             return media, False
         else:
-            media = InputMediaPhoto(
-                media=MENU_IMAGE_FILE_ID,
-                caption=text,
-            )
+            media = await uow.project_settings.get_image_telegram(caption=text)
             return media, True
 
     @staticmethod
