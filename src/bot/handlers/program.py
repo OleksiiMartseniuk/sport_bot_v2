@@ -1,5 +1,6 @@
+import logging
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, ErrorEvent
 from aiogram.filters import Command
 
 from src.utils.unitofwork import SqlAlchemyUnitOfWork
@@ -7,6 +8,7 @@ from src.bot.callback.program import ProgramCallback, MenuLevels
 from src.bot.keyboards.inline.program import ProgramKeyboard
 
 
+logger = logging.getLogger("db")
 program_router = Router()
 
 
@@ -130,3 +132,8 @@ async def exercise_view(
             media=media,
             reply_markup=keyboard,
         )
+
+
+@program_router.error()
+async def error_handler(event: ErrorEvent):
+    logger.error(f"Program router: {event.exception}", exc_info=True)
