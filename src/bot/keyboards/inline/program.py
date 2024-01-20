@@ -263,7 +263,7 @@ class ProgramKeyboard:
             if (
                 user.program_id == callback.program and
                 history_count < exercise.number_of_approaches and
-                today.weekday() == callback.day
+                (user.is_schedule or today.weekday() == callback.day)
             ):
                 text += (
                     f"{'=' * 20}"
