@@ -4,6 +4,7 @@ from sqlalchemy import ForeignKey, Integer, String
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import expression
 
 from src.database import Base
 from src.database.mixins import TimestampMixin
@@ -21,6 +22,9 @@ class TelegramUser(TimestampMixin, Base):
     username: Mapped[Optional[str]]
     telegram_id: Mapped[int] = mapped_column(Integer, unique=True)
     program_id: Mapped[Optional[int]] = mapped_column(ForeignKey("program.id"))
+    is_schedule: Mapped[bool] = mapped_column(
+        server_default=expression.false(),
+    )
 
     program: Mapped[Optional["Program"]] = relationship(
         back_populates="telegram_users",
