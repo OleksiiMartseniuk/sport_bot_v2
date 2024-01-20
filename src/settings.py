@@ -12,6 +12,7 @@ CORS_ORIGINS = os.getenv("CORS_ORIGINS").split(", ")
 # Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 IMAGES_DIR = BASE_DIR / "media/images"
+IMAGE_MENU_PATH = BASE_DIR / "media/base/menu.jpg"
 
 # Data Base
 POSTGRES_DB = os.getenv("POSTGRES_DB")
@@ -31,7 +32,6 @@ DATABASE_URL_ASYNC = (
 
 # Telegram
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-MENU_IMAGE_FILE_ID = os.getenv("MENU_IMAGE_FILE_ID")
 BASE_WEBHOOK_URL = os.getenv("BASE_WEBHOOK_URL")
 WEBHOOK_PATH_SECURITY = os.getenv("WEBHOOK_PATH_SECURITY")
 WEBHOOK_SECRET = os.getenv("WEBHOOK_SECRET")

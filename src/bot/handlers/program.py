@@ -6,20 +6,24 @@ from src.utils.unitofwork import SqlAlchemyUnitOfWork
 from src.bot.callback.program import ProgramCallback, MenuLevels
 from src.bot.keyboards.inline.program import ProgramKeyboard
 
-from src.settings import MENU_IMAGE_FILE_ID
-
 
 program_router = Router()
 
 
 @program_router.message(Command("program"))
 async def categories_view(message: Message, uow: SqlAlchemyUnitOfWork):
-    categories_keyboard = await ProgramKeyboard.get_categories(uow=uow)
-    await message.answer_photo(
+    categories_keyboard, photo = await ProgramKeyboard.get_categories(uow=uow)
+    response = await message.answer_photo(
         caption="Категории",
-        photo=MENU_IMAGE_FILE_ID,
+        photo=photo,
         reply_markup=categories_keyboard,
-    )
+    ) 
+    if not isinstance(photo, str):
+        async with uow:
+            await uow.project_settings.update(
+                data={"menu_image_telegram_id": response.photo[-1].file_id},
+            )
+            await uow.commit()
 
 
 @program_router.callback_query(
@@ -29,7 +33,7 @@ async def categories_callback_view(
     query: CallbackQuery,
     uow: SqlAlchemyUnitOfWork,
 ):
-    categories_keyboard = await ProgramKeyboard.get_categories(uow=uow)
+    categories_keyboard, _ = await ProgramKeyboard.get_categories(uow=uow)
     await query.message.edit_caption(
         caption="Категории",
         reply_markup=categories_keyboard,
