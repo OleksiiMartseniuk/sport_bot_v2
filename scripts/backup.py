@@ -45,7 +45,7 @@ def remove_backup(count_day: int = 7):
     date_remove = NOW - timedelta(days=count_day)
 
     for file in glob.glob(f"{BACKUP_PATH}/*.backup"):
-        date_file_str = file.split("/")[-1].split("_")[0]
+        date_file_str = file.split("/")[-1].split("-")[0]
         date_file = datetime.strptime(date_file_str, FORMAT_DATA)
         if date_file.date() < date_remove.date():
             os.remove(file)
