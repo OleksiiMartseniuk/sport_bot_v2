@@ -7,7 +7,7 @@ from starlette.requests import Request
 from src.utils.utils import download_image
 from src.database.models.user import TelegramUser, User
 from src.database.models.token import Token
-from src.database.models.program import Program, Exercise
+from src.database.models.program import Program, Exercise, Category
 from src.database.models.history import HistoryExercise
 from src.database.models.logger import StatusLog
 from src.database.models.project_settings import ProjectSettings
@@ -47,6 +47,10 @@ class TelegramUserAdmin(ModelView, model=TelegramUser):
         TelegramUser.program,
         TelegramUser.created_at,
     ]
+
+
+class CategoryAdmin(ModelView, model=Category):
+    column_list = [Category.id, Category.title]
 
 
 class ProgramAdmin(ModelView, model=Program):
@@ -106,6 +110,7 @@ admin_view_models = [
     StatusLogAdmin,
     UserAdmin,
     TelegramUserAdmin,
+    CategoryAdmin,
     ProgramAdmin,
     ExerciseAdmin,
     HistoryExerciseAdmin,
