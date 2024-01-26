@@ -4,13 +4,14 @@ from typing import Any
 from sqladmin import ModelView
 from starlette.requests import Request
 
-from src.utils.utils import download_image
-from src.database.models.user import TelegramUser, User
-from src.database.models.token import Token
-from src.database.models.program import Program, Exercise, Category
 from src.database.models.history import HistoryExercise
 from src.database.models.logger import StatusLog
+from src.database.models.program import Category, Exercise, Program
 from src.database.models.project_settings import ProjectSettings
+from src.database.models.token import Token
+from src.database.models.user import TelegramUser, User
+from src.utils.unitofwork import SqlAlchemyUnitOfWork
+from src.utils.utils import download_image
 
 
 class StatusLogAdmin(ModelView, model=StatusLog):
@@ -72,19 +73,23 @@ class ExerciseAdmin(ModelView, model=Exercise):
         return await super().insert_model(request, data)
 
     async def update_model(self, request: Request, pk: str, data: dict) -> Any:
-        exercise = await request.state.uow.exercise.get(id=int(pk))
-        if exercise.image != data["image"]:
-            data["image"] = await download_image(url=data["image"])
-            if exercise.image is not None:
-                if os.path.isfile(exercise.image):
-                    os.remove(exercise.image)
+        uow = SqlAlchemyUnitOfWork()
+        async with uow:
+            exercise = await uow.exercise.get(id=int(pk))
+            if exercise.image != data["image"] and "http" in data["image"]:
+                data["image"] = await download_image(url=data["image"])
+                if not exercise.image:
+                    if os.path.isfile(exercise.image):
+                        os.remove(exercise.image)
         return await super().update_model(request, pk, data)
 
     async def delete_model(self, request: Request, pk: Any) -> None:
-        exercise = await request.state.uow.exercise.get(id=int(pk))
-        if exercise.image is not None:
-            if os.path.isfile(exercise.image):
-                os.remove(exercise.image)
+        uow = SqlAlchemyUnitOfWork()
+        async with uow:
+            exercise = await uow.exercise.get(id=int(pk))
+            if not exercise.image:
+                if os.path.isfile(exercise.image):
+                    os.remove(exercise.image)
         await super().delete_model(request, pk)
 
 
