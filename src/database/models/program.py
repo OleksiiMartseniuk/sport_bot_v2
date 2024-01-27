@@ -1,25 +1,22 @@
-from typing import Optional, List, TYPE_CHECKING
+from typing import TYPE_CHECKING, List, Optional
 
-from sqlalchemy import ForeignKey
-from sqlalchemy import String, Integer, Enum
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-from sqlalchemy.orm import relationship
+from sqlalchemy import Enum, ForeignKey, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database import Base
 from src.database.mixins import TimestampMixin
 from src.utils.utils import Week
 
 if TYPE_CHECKING:
-    from .user import TelegramUser
     from .history import HistoryExercise
+    from .user import TelegramUser
 
 
 class Category(TimestampMixin, Base):
     __tablename__ = "category"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(String(30), unique=True)
+    title: Mapped[str] = mapped_column(String(255), unique=True)
 
     programs: Mapped[List["Program"]] = relationship(
         back_populates="category",
