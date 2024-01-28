@@ -11,9 +11,6 @@ class CategorySchema(BaseModel):
     created_at: datetime
     updated_at: datetime | None
 
-    class Config:
-        orm_mode = True
-
 
 class ProgramSchema(BaseModel):
     id: int
@@ -21,9 +18,6 @@ class ProgramSchema(BaseModel):
     category: CategorySchema
     created_at: datetime
     updated_at: datetime | None
-
-    class Config:
-        orm_mode = True
 
 
 class ExercisesSchema(BaseModel):
@@ -37,9 +31,6 @@ class ExercisesSchema(BaseModel):
     created_at: datetime
     updated_at: datetime | None
 
-    class Config:
-        orm_mode = True
-
 
 class HistoryExercisesSchema(BaseModel):
     id: int
@@ -49,9 +40,3 @@ class HistoryExercisesSchema(BaseModel):
     program: ProgramSchema
     created_at: datetime
     updated_at: datetime | None
-
-    class Config:
-        orm_mode = True
-
-
-# history_list_schema = list[HistoryExercisesSchema]
