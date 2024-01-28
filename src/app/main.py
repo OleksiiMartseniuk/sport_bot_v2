@@ -1,15 +1,13 @@
-from fastapi.middleware.cors import CORSMiddleware
-
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
-
 from sqladmin import Admin
 
-from src.database.base import engine_async
-from src.app.admin.models import admin_view_models
 from src.app.admin.auth import authentication_backend
+from src.app.admin.models import admin_view_models
+from src.app.statistics.router import router as statistics_router
+from src.database.base import engine_async
 from src.settings import CORS_ORIGINS
-
 
 app = FastAPI()
 admin = Admin(
@@ -32,6 +30,8 @@ app.add_middleware(
         "X-Forwarded-For",
     ],
 )
+
+app.include_router(statistics_router)
 
 
 @app.get("/")
