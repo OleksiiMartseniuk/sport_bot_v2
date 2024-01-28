@@ -20,7 +20,9 @@ class HistoryExerciseRepository(SqlAlchemyRepository[HistoryExercise]):
         res = await self.session.execute(stmt)
         return res.scalar_one()
 
-    async def get_statistics(self, telegram_user_id: int, **filters):
+    async def get_statistics(
+        self, telegram_user_id: int, offset: int = 0, limit: int = 50, **filters
+    ) -> list[HistoryExercise]:
         stmt = (
             select(self.model)
             .options(
@@ -29,6 +31,8 @@ class HistoryExerciseRepository(SqlAlchemyRepository[HistoryExercise]):
             )
             .filter_by(**filters)
             .where(self.model.telegram_user_id == telegram_user_id)
+            .offset(offset)
+            .limit(offset + limit)
         )
         res = await self.session.execute(stmt)
         return res.scalars().all()
