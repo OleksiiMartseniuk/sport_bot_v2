@@ -23,8 +23,12 @@ psycopg2 = "^2.9.9"
 fastapi = "0.102.0"
 gunicorn = "^21.2.0"
 pre-commit = "^3.6.0"
+isort = "^5.13.2"
 
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+multi_line_output = 3
