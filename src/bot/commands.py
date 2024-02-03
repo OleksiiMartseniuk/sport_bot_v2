@@ -14,6 +14,10 @@ async def set_commands(bot: Bot):
                     command="program",
                     description="Программа тренировок",
                 ),
+                BotCommand(
+                    command="profile",
+                    description="Настройки профиля",
+                ),
             ]
         )
     except Exception as ex:
