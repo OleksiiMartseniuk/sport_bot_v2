@@ -1,26 +1,26 @@
+# isort:skip_file
 import asyncio
 import logging.config
 
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.types import Update
-
 from fastapi import FastAPI
 
 from src.app.main import app
 from src.bot.commands import set_commands
+from src.bot.handlers.profile import profile_router
 from src.bot.handlers.program import program_router
 from src.bot.middlewares.registration import RegistrationUserMiddleware
-from src.utils.unitofwork import SqlAlchemyUnitOfWork
 from src.settings import (
-    BOT_TOKEN,
     BASE_WEBHOOK_URL,
-    WEBHOOK_SECRET,
-    WEBHOOK_PATH_SECURITY,
+    BOT_TOKEN,
     DEBUG,
     LOGGING_CONFIG,
+    WEBHOOK_PATH_SECURITY,
+    WEBHOOK_SECRET,
 )
-
+from src.utils.unitofwork import SqlAlchemyUnitOfWork
 
 WEBHOOK_PATH = f"/webhook/{WEBHOOK_PATH_SECURITY}"
 WEBHOOK_URL = f"{BASE_WEBHOOK_URL}{WEBHOOK_PATH}"
@@ -38,6 +38,7 @@ def setup_bot() -> tuple[Bot, Dispatcher]:
     # Routers
     dp.include_routers(
         program_router,
+        profile_router,
     )
 
     bot = Bot(BOT_TOKEN, parse_mode=ParseMode.HTML)
@@ -58,6 +59,7 @@ def main() -> FastAPI | None:
     if DEBUG:
         asyncio.run(run_debug(bot, dp))
     else:
+
         @app.on_event("startup")
         async def on_startup():
             await set_commands(bot)
