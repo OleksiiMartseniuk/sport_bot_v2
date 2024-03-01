@@ -13,9 +13,9 @@ class ProfileSettingKeyboard:
         async with uow:
             telegram_user = await uow.telegram_user.get(telegram_id=telegram_id)
             massage = (
-                "Отключить расписание"
+                "Отключить расписание ❌"
                 if telegram_user.is_schedule
-                else "Включить расписание"
+                else "Включить расписание ✅"
             )
-            builder.row(KeyboardButton(text=massage))
+            builder.add(KeyboardButton(text=massage))
         return builder.as_markup(resize_keyboard=True)

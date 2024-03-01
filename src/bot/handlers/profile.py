@@ -14,12 +14,3 @@ async def profile_setting_view(message: Message, uow: SqlAlchemyUnitOfWork):
         telegram_id=message.from_user.id,
     )
     await message.answer("Настройки профиля", reply_markup=keyboard_menu)
-
-
-@profile_router.message(F.text.startswith("/start"))
-async def is_schedule_view(message: Message, uow: SqlAlchemyUnitOfWork):
-    keyboard_menu = await ProfileSettingKeyboard.get_menu_setting(
-        uow=uow,
-        telegram_id=message.from_user.id,
-    )
-    await message.answer("Настройки профиля", reply_markup=keyboard_menu)
