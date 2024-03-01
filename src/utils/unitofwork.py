@@ -1,16 +1,16 @@
 from abc import ABC, abstractmethod
 
 from src.database.base import async_session
+from src.repositories.history import HistoryExerciseRepository
 from src.repositories.program import (
     CategoryRepository,
-    ProgramRepository,
     ExerciseRepository,
+    ProgramRepository,
 )
-from src.repositories.telegram_user import TelegramUserRepository
-from src.repositories.user import UserRepository
-from src.repositories.history import HistoryExerciseRepository
-from src.repositories.token import TokenRepository
 from src.repositories.project_settings import ProjectSettingsRepository
+from src.repositories.telegram_user import TelegramUserRepository
+from src.repositories.token import TokenRepository
+from src.repositories.user import UserRepository
 
 
 class UnitOfWork(ABC):
@@ -24,24 +24,19 @@ class UnitOfWork(ABC):
     project_settings: ProjectSettingsRepository
 
     @abstractmethod
-    def __init__(self):
-        ...
+    def __init__(self): ...
 
     @abstractmethod
-    async def __aenter__(self):
-        ...
+    async def __aenter__(self): ...
 
     @abstractmethod
-    async def __aexit__(self, *args, **kwargs):
-        ...
+    async def __aexit__(self, *args, **kwargs): ...
 
     @abstractmethod
-    async def commit(self):
-        ...
+    async def commit(self): ...
 
     @abstractmethod
-    async def rollback(self):
-        ...
+    async def rollback(self): ...
 
 
 class SqlAlchemyUnitOfWork(UnitOfWork):
@@ -69,3 +64,9 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
 
     async def rollback(self):
         await self.session.rollback()
+
+
+async def get_sql_alchemy_unit_of_work() -> SqlAlchemyUnitOfWork:
+    uow = SqlAlchemyUnitOfWork()
+    async with uow:
+        yield uow
